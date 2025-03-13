@@ -10,6 +10,7 @@ const winnerSchema = new mongoose.Schema(
     TAX_AMT: String,
     SR_NO: Number,
     POSITION: String,
+
   },
   {
     collection: "Winners",
