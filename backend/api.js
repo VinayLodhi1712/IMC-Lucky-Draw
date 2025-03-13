@@ -42,7 +42,7 @@ const Winners = require("./schema/propertywinners.js"); //post winners
 const WaterWinners = require("./schema/waterwinners.js"); //post water
 
 // property first winner
-app.get("/random-winner_1", async (req, resp) => {
+app.get("/property_random-winner_1", async (req, resp) => {
   try {
     const existingWinner = await Winners.findOne({ POSITION: "1st" });
 
@@ -88,7 +88,7 @@ app.get("/random-winner_1", async (req, resp) => {
 });
 
 //get property 2 winner
-app.get("/random-winner_2", async (req, resp) => {
+app.get("/property_random-winner_2", async (req, resp) => {
   try {
     const existingWinner = await Winners.findOne({ POSITION: "2nd" });
 
@@ -135,7 +135,7 @@ app.get("/random-winner_2", async (req, resp) => {
 });
 
 //get property 3 winner
-app.get("/random-winner_3", async (req, resp) => {
+app.get("/property_random-winner_3", async (req, resp) => {
   try {
     const existingWinner = await Winners.findOne({ POSITION: "3rd" });
 
@@ -182,7 +182,7 @@ app.get("/random-winner_3", async (req, resp) => {
 });
 
 // property zone winners
-app.get("/random-zone-winners/:zoneNumber", async (req, resp) => {
+app.get("/property_random-zone-winners/:zoneNumber", async (req, resp) => {
   try {
     const { zoneNumber } = req.params;
 
