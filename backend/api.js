@@ -3,8 +3,12 @@ require("./dbconnect2.js");
 const mongoose = require("mongoose");
 const app = express();
 const cors = require("cors");
+const ExcelJS = require("exceljs"); //excel
+
 app.use(cors());
 app.use(express.json());
+
+// schemas to get winners
 
 const PropertyAdvance = mongoose.model(
   "PropertyAdvance",
@@ -12,102 +16,218 @@ const PropertyAdvance = mongoose.model(
   "PropertyAdvance"
 );
 
-const Zones = mongoose.model(
-  "Pzones",
-  new mongoose.Schema({}, { strict: false }),
-  "Pzones"
-);
+// water winners
 const WaterAdvance = mongoose.model(
   "WaterAdvance",
   new mongoose.Schema({}, { strict: false }),
   "WaterAdvance"
 );
+
+// login
 const Author = mongoose.model(
   "Author",
   new mongoose.Schema({}, { strict: false }),
   "Author"
 );
-const ExcelJS = require("exceljs"); //excel
 
 // add winners to database
 const Winners = require("./schema/propertywinners.js"); //post winners
 const WaterWinners = require("./schema/waterwinners.js"); //post water
 
-//get property 1 2 3 winners
-app.get("/search1/:key", async (req, resp) => {
-  const key = Number(req.params.key);
+// property first winner
+app.get("/property_random-winner_1", async (req, resp) => {
   try {
-    let result = await PropertyAdvance.find({ SR_NO: key });
-    resp.send(result);
+    const existingWinner = await Winners.findOne({ POSITION: "1st" });
+
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: "A 1st position winner already exists." });
+    }
+    let result = await PropertyAdvance.aggregate([
+      { $match: { isWinner: { $ne: true } } },
+      { $sample: { size: 1 } },
+    ]);
+
+    if (result.length > 0) {
+      const winner = result[0];
+
+      // Mark as winner in PropertyAdvance
+      await PropertyAdvance.updateOne(
+        { _id: winner._id },
+        { $set: { isWinner: true } }
+      );
+
+      // Insert into Winners collection
+      await Winners.create({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: "1st",
+      });
+
+      resp.json(winner);
+    } else {
+      resp.status(404).json({ message: "No eligible winners found." });
+    }
   } catch (error) {
-    console.error("Error fetching data:", error);
-    resp.status(500).send("Internal Server Error");
+    console.error("Error selecting winner:", error);
+    resp.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-//get property zone winners
-app.get("/search2/:key", async (req, resp) => {
-  const key = req.params.key;
-  let result = await Zones.find({ SR_NO: key });
-  resp.send(result);
-});
-
-//get water
-app.get("/search3/:key", async (req, resp) => {
-  const key = req.params.key;
-  let result = await WaterAdvance.find({ SR_NO: key });
-  resp.send(result);
-});
-
-//first post
-app.post("/first/:srno", async (req, resp) => {
-  const srno = req.params.srno;
-  let result = await Winners.insertMany(req.body);
-  await Winners.updateOne(
-    { SR_NO: srno },
-    { $set: { POSITION: "1st winner" } }
-  );
-  resp.send(result);
-});
-
-//second post
-app.post("/second/:srno", async (req, resp) => {
-  const srno = req.params.srno;
-  let result = await Winners.insertMany(req.body);
-  await Winners.updateMany(
-    { SR_NO: srno },
-    { $set: { POSITION: "2nd winner" } }
-  );
-  resp.send(result);
-});
-
-//third post
-app.post("/third/:srno", async (req, resp) => {
-  const srno = req.params.srno;
-  let result = await Winners.insertMany(req.body);
-  await Winners.updateMany(
-    { SR_NO: srno },
-    { $set: { POSITION: "3rd winner" } }
-  );
-  resp.send(result);
-});
-
-//property zones post
-app.post("/Forth/Zone/:zoneNumber/:srno", async (req, resp) => {
+//get property 2 winner
+app.get("/property_random-winner_2", async (req, resp) => {
   try {
-    const { zoneNumber, srno } = req.params;
-    const result = await Winners.insertMany(req.body);
+    const existingWinner = await Winners.findOne({ POSITION: "2nd" });
 
-    await Winners.updateMany(
-      { SR_NO: srno },
-      { $set: { POSITION: `Zone ${zoneNumber} winner` } }
-    );
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: "2nd position winners already exists." });
+    }
+    let result = await PropertyAdvance.aggregate([
+      { $match: { isWinner: { $ne: true } } },
+      { $sample: { size: 3 } },
+    ]);
 
-    resp
-      .status(201)
-      .json({ message: `Winners added for Zone ${zoneNumber}`, result });
+    if (result.length > 0) {
+      const winners = result.map((winner, index) => ({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: "2nd",
+      }));
+
+      // Mark winners as selected in PropertyAdvance
+      const winnerIds = result.map((winner) => winner._id);
+      await PropertyAdvance.updateMany(
+        { _id: { $in: winnerIds } },
+        { $set: { isWinner: true } }
+      );
+
+      // Insert all winners into Winners collection
+      await Winners.insertMany(winners);
+
+      resp.json(winners);
+    } else {
+      resp.status(404).json({ message: "No eligible winners found." });
+    }
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error selecting winners:", error);
+    resp.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//get property 3 winner
+app.get("/property_random-winner_3", async (req, resp) => {
+  try {
+    const existingWinner = await Winners.findOne({ POSITION: "3rd" });
+
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: "3rd position winner already exists." });
+    }
+    let result = await PropertyAdvance.aggregate([
+      { $match: { isWinner: { $ne: true } } },
+      { $sample: { size: 5 } },
+    ]);
+
+    if (result.length > 0) {
+      const winners = result.map((winner, index) => ({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: "3rd",
+      }));
+
+      // Mark winners as selected in PropertyAdvance
+      const winnerIds = result.map((winner) => winner._id);
+      await PropertyAdvance.updateMany(
+        { _id: { $in: winnerIds } },
+        { $set: { isWinner: true } }
+      );
+
+      // Insert all winners into Winners collection
+      await Winners.insertMany(winners);
+
+      resp.json(winners);
+    } else {
+      resp.status(404).json({ message: "No eligible winners found." });
+    }
+  } catch (error) {
+    console.error("Error selecting winners:", error);
+    resp.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// property zone winners
+app.get("/property_random-zone-winners/:zoneNumber", async (req, resp) => {
+  try {
+    const { zoneNumber } = req.params;
+
+    const existingWinner = await Winners.findOne({
+      POSITION: `Zone ${zoneNumber}`,
+    });
+
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: `Zone ${zoneNumber} winners already exists.` });
+    }
+
+    let result = await PropertyAdvance.aggregate([
+      { $match: { ZONE: zoneNumber, isWinner: { $ne: true } } }, // Filter by zone and exclude previous winners
+      { $sample: { size: 5 } },
+    ]);
+
+    if (result.length > 0) {
+      const winnerIds = result.map((winner) => winner._id);
+
+      // Mark selected winners in Zones collection
+      await PropertyAdvance.updateMany(
+        { _id: { $in: winnerIds } },
+        { $set: { isWinner: true } }
+      );
+
+      const winnersData = result.map((winner, index) => ({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: `Zone ${zoneNumber}`, // Assign positions
+      }));
+
+      // Insert winners into Winners collection
+      await Winners.insertMany(winnersData);
+
+      resp.status(201).json({
+        message: `5 winners added for Zone ${zoneNumber}`,
+        winners: winnersData,
+      });
+    } else {
+      resp
+        .status(404)
+        .json({ message: `Not enough eligible winners in Zone ${zoneNumber}` });
+    }
+  } catch (error) {
+    console.error("Error selecting zone winners:", error);
     resp.status(500).json({ error: "Internal Server Error" });
   }
 });
@@ -161,55 +281,206 @@ app.get("/GenerateExcel", async (req, resp) => {
   }
 });
 
-//water post
-app.post("/waterfirst/:srno", async (req, resp) => {
-  const srno = req.params.srno;
-  let result = await WaterWinners.insertMany(req.body);
-  await WaterWinners.updateMany(
-    { SR_NO: srno },
-    { $set: { POSITION: "1st winner" } }
-  );
-  resp.send(result);
+// water winners
+
+//get water 1st winner
+app.get("/water_random-winner_1", async (req, resp) => {
+  try {
+    const existingWinner = await WaterWinners.findOne({ POSITION: "1st" });
+
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: "A 1st position winner already exists." });
+    }
+    let result = await WaterAdvance.aggregate([
+      { $match: { isWinner: { $ne: true } } },
+      { $sample: { size: 1 } },
+    ]);
+
+    if (result.length > 0) {
+      const winner = result[0];
+
+      // Mark as winner in PropertyAdvance
+      await WaterAdvance.updateOne(
+        { _id: winner._id },
+        { $set: { isWinner: true } }
+      );
+
+      // Insert into Water Winners collection
+      await WaterWinners.create({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: "1st",
+      });
+
+      resp.json(winner);
+    } else {
+      resp.status(404).json({ message: "No eligible winners found." });
+    }
+  } catch (error) {
+    console.error("Error selecting winner:", error);
+    resp.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-app.post("/watersecond/:srno", async (req, resp) => {
-  const srno = req.params.srno;
-  let result = await WaterWinners.insertMany(req.body);
-  await WaterWinners.updateMany(
-    { SR_NO: srno },
-    { $set: { POSITION: "2nd winner" } }
-  );
-  resp.send(result);
+//get water 2nd winner
+app.get("/water_random-winner_2", async (req, resp) => {
+  try {
+    const existingWinner = await WaterWinners.findOne({ POSITION: "2nd" });
+
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: "2nd position winners already exists." });
+    }
+    let result = await WaterAdvance.aggregate([
+      { $match: { isWinner: { $ne: true } } },
+      { $sample: { size: 3 } },
+    ]);
+
+    if (result.length > 0) {
+      const winners = result.map((winner, index) => ({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: "2nd",
+      }));
+
+      // Mark winners as selected in PropertyAdvance
+      const winnerIds = result.map((winner) => winner._id);
+      await WaterAdvance.updateMany(
+        { _id: { $in: winnerIds } },
+        { $set: { isWinner: true } }
+      );
+
+      // Insert all winners into Winners collection
+      await WaterWinners.insertMany(winners);
+
+      resp.json(winners);
+    } else {
+      resp.status(404).json({ message: "No eligible winners found." });
+    }
+  } catch (error) {
+    console.error("Error selecting winners:", error);
+    resp.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
-app.post("/waterthird/:srno", async (req, resp) => {
-  const srno = req.params.srno;
-  let result = await WaterWinners.insertMany(req.body);
-  await WaterWinners.updateMany(
-    { SR_NO: srno },
-    { $set: { POSITION: "3rd winner" } }
-  );
-  resp.send(result);
+//get water 3rd winner
+app.get("/water_random-winner_3", async (req, resp) => {
+  try {
+    const existingWinner = await WaterWinners.findOne({ POSITION: "3rd" });
+
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: "3rd position winner already exists." });
+    }
+    let result = await WaterAdvance.aggregate([
+      { $match: { isWinner: { $ne: true } } },
+      { $sample: { size: 5 } },
+    ]);
+
+    if (result.length > 0) {
+      const winners = result.map((winner, index) => ({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: "3rd",
+      }));
+
+      // Mark winners as selected in PropertyAdvance
+      const winnerIds = result.map((winner) => winner._id);
+      await WaterAdvance.updateMany(
+        { _id: { $in: winnerIds } },
+        { $set: { isWinner: true } }
+      );
+
+      // Insert all winners into Winners collection
+      await WaterWinners.insertMany(winners);
+
+      resp.json(winners);
+    } else {
+      resp.status(404).json({ message: "No eligible winners found." });
+    }
+  } catch (error) {
+    console.error("Error selecting winners:", error);
+    resp.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 //water zones
 
-const handleZoneWinner = async (req, resp, zone) => {
-  const srno = req.params.srno;
-  let result = await WaterWinners.insertMany(req.body);
-  await WaterWinners.updateMany(
-    { SR_NO: srno },
-    { $set: { POSITION: `${zone} winner` } }
-  );
-  resp.send(result);
-};
+app.get("/water_random-zone-winners/:zoneNumber", async (req, resp) => {
+  try {
+    const { zoneNumber } = req.params;
 
-// Define routes for each zone using a loop
-for (let zone = 1; zone <= 19; zone++) {
-  app.post(`/WaterForth/Zone${zone}/:srno`, async (req, resp) => {
-    await handleZoneWinner(req, resp, `Zone ${zone}`);
-  });
-}
+    const existingWinner = await WaterWinners.findOne({
+      POSITION: `Zone ${zoneNumber}`,
+    });
+
+    if (existingWinner) {
+      return resp
+        .status(400)
+        .json({ message: `Zone ${zoneNumber} winners already exists.` });
+    }
+
+    let result = await WaterAdvance.aggregate([
+      { $match: { ZONE: zoneNumber, isWinner: { $ne: true } } }, // Filter by zone and exclude previous winners
+      { $sample: { size: 5 } },
+    ]);
+
+    if (result.length > 0) {
+      const winnerIds = result.map((winner) => winner._id);
+
+      // Mark selected winners in Zones collection
+      await WaterAdvance.updateMany(
+        { _id: { $in: winnerIds } },
+        { $set: { isWinner: true } }
+      );
+
+      const winnersData = result.map((winner, index) => ({
+        PARTNER: winner.PARTNER,
+        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        WARD: winner.WARD,
+        ZONE: winner.ZONE,
+        ASSMENTYEAR: winner.ASSMENTYEAR,
+        TAX_AMT: winner.TAX_AMT,
+        SR_NO: winner.SR_NO,
+        POSITION: `Zone ${zoneNumber}`, // Assign positions
+      }));
+
+      // Insert winners into Winners collection
+      await WaterWinners.insertMany(winnersData);
+
+      resp.status(201).json({
+        message: `5 winners added for Zone ${zoneNumber}`,
+        winners: winnersData,
+      });
+    } else {
+      resp
+        .status(404)
+        .json({ message: `Not enough eligible winners in Zone ${zoneNumber}` });
+    }
+  } catch (error) {
+    console.error("Error selecting zone winners:", error);
+    resp.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 //water excel
 
@@ -268,8 +539,8 @@ app.get("/GenerateExcelWater", async (req, resp) => {
 
 app.post("/Login", async (req, resp) => {
   if (req.body.Password && req.body.Email) {
-    //user must enter both emil and password for login
-    let result = await Author.findOne(req.body); //.select("-Password"); //select everthing except password
+    //user must enter both email and password for login
+    let result = await Author.findOne(req.body).select("-Password");
     if (result) {
       resp.send(result);
     } else {
