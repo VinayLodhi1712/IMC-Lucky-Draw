@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardHeader,
@@ -7,20 +8,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-("use client");
-
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Next.js router
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
@@ -29,14 +18,17 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter(); // Next.js router for navigation
+  const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+  const router = useRouter();
+
   const handleLogin = async () => {
     if (!email || !password) {
-      console.log("❌ Missing email or password.");
+      toast.error("❌ Missing email or password.");
       toast.error("❌ Please enter both email and password.");
       return;
     }
-
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:5000/Login", {
         method: "POST",
@@ -44,32 +36,24 @@ export default function Login() {
         body: JSON.stringify({ Email: email, Password: password }),
       });
 
-      const result = await response.text();
+      const result = await response.json();
 
-      let jsonData;
-
-      try {
-        jsonData = JSON.parse(result);
-      } catch (error) {
-        console.error("❌ JSON parsing error:", error);
-        jsonData = result;
-      }
-
-      if (typeof jsonData === "object" && jsonData?._id) {
-        toast.success("✅ Login Successful! Redirecting...");
-        localStorage.setItem("user", JSON.stringify(jsonData));
-
+      if (response.ok) {
+        toast.success("Login Successful !");
+        localStorage.setItem("user", JSON.stringify(result.user));
+        setRedirecting(true);
         setTimeout(() => {
           router.push("/");
         }, 2000);
-      } else if (jsonData === "0") {
-        toast.error("❌ No such user found.");
       } else {
-        toast.error("❌ Please enter a valid email or password.");
+        toast.error(result.message);
+        setLoading(false);
       }
     } catch (error) {
-      console.error("🔥 Login error:", error);
       toast.error("❌ An unexpected error occurred.");
+      setLoading(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -116,8 +100,12 @@ export default function Login() {
                 </button>
               </div>
             </div>
-            <Button className="w-full" onClick={handleLogin}>
-              Login
+            <Button className="w-full" onClick={handleLogin} disabled={loading}>
+              {loading
+                ? "Logging in..."
+                : redirecting
+                ? "Redirecting..."
+                : "Login"}
             </Button>
           </div>
         </CardContent>

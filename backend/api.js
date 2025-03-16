@@ -538,16 +538,27 @@ app.get("/GenerateExcelWater", async (req, resp) => {
 // api to login
 
 app.post("/Login", async (req, resp) => {
-  if (req.body.Password && req.body.Email) {
-    //user must enter both email and password for login
-    let result = await Author.findOne(req.body).select("-Password");
-    if (result) {
-      resp.send(result);
-    } else {
-      resp.send("0");
+  try {
+    if (req.body.Password && req.body.Email) {
+      let user = await Author.findOne(req.body);
+      if (user) {
+        resp.status(200).send({
+          success: true,
+          message: "login successfull",
+          user,
+        });
+      } else {
+        resp.status(400).send({
+          success: true,
+          message: "no such user found",
+        });
+      }
     }
-  } else {
-    resp.send("1");
+  } catch (error) {
+    resp.status(500).send({
+      success: false,
+      message: "internal server error",
+    });
   }
 });
 
