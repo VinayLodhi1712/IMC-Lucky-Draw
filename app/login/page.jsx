@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation"; // Next.js router
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,39 +13,57 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
- // const navigate = useNavigate();
-
+  const router = useRouter(); // Next.js router for navigation
   const handleLogin = async () => {
+    if (!email || !password) {
+      console.log("❌ Missing email or password.");
+      toast.error("❌ Please enter both email and password.");
+      return;
+    }
+  
+  
     try {
-      const response = await fetch("http://localhost:5000/login", {
+      const response = await fetch("http://localhost:5000/Login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ Email: email, Password: password }), // ✅ Corrected variable names
       });
-
-      const result = await response.json();
-
-      if (response.ok && result.name) {
-        localStorage.setItem("user", JSON.stringify(result));
-
-        // ✅ Success toast
-        toast.success("✅ Login Successful! Redirecting...", { duration: 3000 });
-
-       // setTimeout(() => navigate("/"), 2000); // Redirect after 2s
-      } else {
-        // ❌ Error toast
-        toast.error(result.message || "❌ Invalid email or password");
+  
+      const result = await response.text();
+  
+      let jsonData;
+  
+      try {
+        jsonData = JSON.parse(result);
+      } catch (error) {
+        console.error("❌ JSON parsing error:", error);
+        jsonData = result;
       }
+  
+      if (typeof jsonData === "object" && jsonData?._id) {
+        toast.success("✅ Login Successful! Redirecting...");
+        localStorage.setItem("user", JSON.stringify(jsonData));
+      
+        setTimeout(() => {
+          router.push("/");
+        }, 2000);
+      } else if (jsonData === "0") {
+        toast.error("❌ No such user found.");
+      } else {
+        toast.error("❌ Please enter a valid email or password.");
+      }
+      
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("❌ An unexpected error occurred. Please try again.");
+      console.error("🔥 Login error:", error);
+      toast.error("❌ An unexpected error occurred.");
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Toaster position="top-right" reverseOrder={false} /> {/* Toast UI */}
-      
+      <Toaster position="top-right" reverseOrder={false} />
+
       <Card className="w-full max-w-sm p-6 shadow-lg rounded-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Login</CardTitle>
