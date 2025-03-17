@@ -6,6 +6,7 @@ const cors = require("cors");
 const ExcelJS = require("exceljs"); //excel
 const JWT = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const checkToken = require("./middlewares/isLoggedin.js");
 
 app.use(cors());
 app.use(express.json());
@@ -571,6 +572,11 @@ app.post("/Login", async (req, resp) => {
   }
 });
 
+app.get("/userAuth", checkToken, async (req, resp) => {
+  resp.status(200).send({
+    success: true,
+  });
+});
 
 app.listen(5000, () => {
   console.log("server running on port 5000");

@@ -1,12 +1,12 @@
 "use client";
-
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import toast, { Toaster } from "react-hot-toast";
+import CheckLogin from "../_privateRoutes/checkLogin";
 
-export default function WaterWinnersPage() {
+function WaterWinnersPage() {
   const [loading, setLoading] = useState(false);
   const [zone, setZone] = useState("");
   const [winners, setWinners] = useState([]); // Store winners
@@ -226,3 +226,5 @@ export default function WaterWinnersPage() {
     </div>
   );
 }
+
+export default CheckLogin(WaterWinnersPage);

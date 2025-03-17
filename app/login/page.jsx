@@ -17,7 +17,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function Login() {
+
+function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +33,7 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/Login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Email: email, Password: password }),
@@ -187,3 +188,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;
