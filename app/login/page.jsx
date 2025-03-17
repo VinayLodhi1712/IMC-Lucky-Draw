@@ -1,57 +1,65 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Eye, EyeOff, LogIn } from "lucide-react"
-import toast, { Toaster } from "react-hot-toast"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, LogIn } from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [redirecting, setRedirecting] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
+  const router = useRouter();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      toast.error("Missing email or password.")
-      
-      return
+      toast.error("Missing email or password.");
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:5000/Login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Email: email, Password: password }),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (response.ok) {
-        toast.success("Login Successful !")
-        localStorage.setItem("user", JSON.stringify(result.user))
-        setRedirecting(true)
+        toast.success("Login Successful !");
+        localStorage.setItem("user", JSON.stringify(result.user));
+        localStorage.setItem("token", JSON.stringify(result.token));
+
+        setRedirecting(true);
         setTimeout(() => {
-          router.push("/")
-        }, 2000)
+          router.push("/");
+        }, 2000);
       } else {
-        toast.error(result.message)
-        setLoading(false)
+        toast.error(result.message);
+        setLoading(false);
       }
     } catch (error) {
-      toast.error("An unexpected error occurred.")
-      setLoading(false)
+      toast.error("An unexpected error occurred.");
+      setLoading(false);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
@@ -78,7 +86,9 @@ export default function Login() {
                 <LogIn className="h-6 w-6 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">
+              Welcome Back
+            </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
               Enter your credentials to access your account
             </CardDescription>
@@ -171,12 +181,9 @@ export default function Login() {
                 "Sign In"
               )}
             </Button>
-
-            
           </CardFooter>
         </Card>
       </div>
     </div>
-  )
+  );
 }
-

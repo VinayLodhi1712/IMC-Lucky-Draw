@@ -4,10 +4,12 @@ const mongoose = require("mongoose");
 const app = express();
 const cors = require("cors");
 const ExcelJS = require("exceljs"); //excel
+const JWT = require("jsonwebtoken");
+const dotenv = require("dotenv");
 
 app.use(cors());
 app.use(express.json());
-
+dotenv.config();
 // schemas to get winners
 
 const PropertyAdvance = mongoose.model(
@@ -541,26 +543,34 @@ app.post("/Login", async (req, resp) => {
   try {
     if (req.body.Password && req.body.Email) {
       let user = await Author.findOne(req.body);
+      let token;
+
       if (user) {
-        resp.status(200).send({
+        token = JWT.sign({ _id: user._id }, process.env.SECRET, {
+          expiresIn: "7d",
+        });
+        return resp.status(200).send({
           success: true,
           message: "login successfull",
+          token,
           user,
         });
       } else {
-        resp.status(400).send({
-          success: true,
+        return resp.status(400).send({
+          success: false,
           message: "no such user found",
         });
       }
     }
   } catch (error) {
+    console.log(error);
     resp.status(500).send({
       success: false,
       message: "internal server error",
     });
   }
 });
+
 
 app.listen(5000, () => {
   console.log("server running on port 5000");
