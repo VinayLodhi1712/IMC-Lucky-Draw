@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectContent,
-  SelectValue,
-} from "@/components/ui/select";
+import CheckLogin from "../_privateRoutes/checkLogin";
 import {
   Table,
   TableBody,
@@ -20,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function RandomWinnerPage() {
+function RandomWinnerPage() {
   const [winners, setWinners] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingExcel, setLoadingExcel] = useState(false);
@@ -186,7 +180,7 @@ export default function RandomWinnerPage() {
               >
                 {loading ? "Generating..." : "📥 Download Excel"}
               </Button>
-              
+
               <Button
                 onClick={clearWinners}
                 disabled={loading || winners.length === 0}
@@ -196,7 +190,6 @@ export default function RandomWinnerPage() {
               </Button>
             </div>
           </div>
-
 
           {/* Error Message */}
           {error && (
@@ -258,3 +251,5 @@ export default function RandomWinnerPage() {
     </div>
   );
 }
+
+export default CheckLogin(RandomWinnerPage);

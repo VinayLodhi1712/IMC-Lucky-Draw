@@ -17,7 +17,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -43,9 +42,13 @@ function Login() {
 
       if (response.ok) {
         toast.success("Login Successful !");
-        localStorage.setItem("user", JSON.stringify(result.user));
-        localStorage.setItem("token", JSON.stringify(result.token));
-
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({
+            user: result.user,
+            token: result.token,
+          })
+        );
         setRedirecting(true);
         setTimeout(() => {
           router.push("/");
@@ -63,7 +66,7 @@ function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="flex items-center justify-center h-[640px] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <Toaster
         position="top-right"
         reverseOrder={false}
@@ -91,7 +94,7 @@ function Login() {
               Welcome Back
             </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Enter your credentials to access your account
+              Enter admin credentials to access
             </CardDescription>
           </CardHeader>
 

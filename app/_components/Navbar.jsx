@@ -1,18 +1,13 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "../_context/userAuth";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const [auth, setAuth] = useAuth();
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-  };
-
-  const toggleAuth = () => {
-    setIsLoggedIn(!isLoggedIn);
   };
 
   return (
@@ -45,20 +40,17 @@ const Navbar = () => {
 
           {/* Auth links on right side */}
           <div className="hidden md:flex md:items-center">
-            {isLoggedIn ? (
-              <button
-                onClick={toggleAuth}
-                className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200"
-              >
+            {auth?.user ? (
+              <button className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200">
                 Logout
               </button>
             ) : (
-              <button
-                onClick={toggleAuth}
-                className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200"
-              >
-                Login
-              </button>
+              <Link href="/login">
+                {" "}
+                <button className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200">
+                  Login
+                </button>
+              </Link>
             )}
           </div>
 
@@ -121,18 +113,12 @@ const Navbar = () => {
           >
             Water
           </Link>
-          {isLoggedIn ? (
-            <button
-              onClick={toggleAuth}
-              className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium"
-            >
+          {auth?.user ? (
+            <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
               Logout
             </button>
           ) : (
-            <button
-              onClick={toggleAuth}
-              className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium"
-            >
+            <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
               Login
             </button>
           )}

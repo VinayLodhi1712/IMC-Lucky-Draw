@@ -2,7 +2,14 @@
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import toast, { Toaster } from "react-hot-toast";
 import CheckLogin from "../_privateRoutes/checkLogin";
 
@@ -24,11 +31,11 @@ function WaterWinnersPage() {
         console.log(data);
         setWinners((prev) => [...prev, data]); // Store the new winners
       } else {
-        toast.error(data.message || "❌ Failed to select winner.");
+        toast.error(data.message || "Failed to select winner.");
       }
     } catch (err) {
       console.error("Error fetching winner:", err);
-      toast.error("❌ Server Error. Try again.");
+      toast.error("Server Error. Try again.");
     } finally {
       setLoading(false);
     }
@@ -47,13 +54,13 @@ function WaterWinnersPage() {
       if (response.ok) {
         toast.success(`🎉 Winners selected for Zone ${zone}!`);
         console.log(data);
-        setWinners((prev) => [...prev, ...data.winners]); // Append new winners
+        setWinners(data.winners); 
       } else {
-        toast.error(data.message || "❌ Failed to select zone winners.");
+        toast.error(data.message || " Failed to select zone winners.");
       }
     } catch (err) {
       console.error("Error fetching zone winner:", err);
-      toast.error("❌ Server Error. Try again.");
+      toast.error("Server Error. Try again.");
     } finally {
       setLoading(false);
     }
@@ -79,7 +86,7 @@ function WaterWinnersPage() {
       toast.success("✅ Excel file downloaded successfully!");
     } catch (err) {
       console.error("Excel Download Error:", err);
-      toast.error("❌ Failed to download Excel.");
+      toast.error(" Failed to download Excel.");
     } finally {
       setLoading(false);
     }
@@ -161,7 +168,7 @@ function WaterWinnersPage() {
               >
                 {loading ? "Generating..." : "📥 Download Excel"}
               </Button>
-              
+
               <Button
                 onClick={clearWinners}
                 disabled={loading || winners.length === 0}
@@ -178,38 +185,34 @@ function WaterWinnersPage() {
               <h3 className="text-lg font-semibold text-gray-700 mb-2">
                 🏆 Winners List:
               </h3>
-              
+
               <div className="rounded-md border shadow-sm overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-slate-100">
-                      <TableHead className="font-bold">#</TableHead>
-                      <TableHead className="font-bold">SR No</TableHead>
+                      <TableHead className="font-bold">SR_NO </TableHead>
+                      <TableHead className="font-bold">Name</TableHead>
                       <TableHead className="font-bold">Ward</TableHead>
                       <TableHead className="font-bold">Zone</TableHead>
-                      <TableHead className="font-bold">Consumer No</TableHead>
-                      <TableHead className="font-bold">Name</TableHead>
-                      <TableHead className="font-bold">Amount</TableHead>
+                      <TableHead className="font-bold">Address</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {winners.map((winner, index) => (
-                      <TableRow 
+                      <TableRow
                         key={index}
                         className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
                       >
-                        <TableCell className="font-medium">{index + 1}</TableCell>
-                        <TableCell>{safeDisplay(winner.SR_NO)}</TableCell>
+                        <TableCell className="font-medium">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell>{safeDisplay(winner.CONNECTION)}</TableCell>
+                        <TableCell>
+                          {safeDisplay(winner.NAME)}
+                        </TableCell>
                         <TableCell>{safeDisplay(winner.WARD)}</TableCell>
                         <TableCell>{safeDisplay(winner.ZONE)}</TableCell>
-                        <TableCell>{safeDisplay(winner.CONSUMER_NO || winner.CONSUMER_NUMBER)}</TableCell>
-                        <TableCell>{safeDisplay(winner.NAME || winner.CONSUMER_NAME)}</TableCell>
-                        <TableCell>
-                          {winner.AMOUNT || winner.TAX_AMT ? 
-                            `₹${parseFloat(winner.AMOUNT || winner.TAX_AMT).toLocaleString('en-IN')}` : 
-                            "-"
-                          }
-                        </TableCell>
+                        <TableCell>{safeDisplay(winner.ADDRESS)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -218,7 +221,10 @@ function WaterWinnersPage() {
             </div>
           ) : (
             <div className="mt-4 text-center p-8 bg-gray-50 rounded-lg border border-gray-200">
-              <p className="text-gray-500">No winners selected yet. Use the buttons above to select winners.</p>
+              <p className="text-gray-500">
+                No winners selected yet. Use the buttons above to select
+                winners.
+              </p>
             </div>
           )}
         </CardContent>

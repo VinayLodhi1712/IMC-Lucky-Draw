@@ -49,10 +49,9 @@ export default function CheckLogin(WrappedComponent) {
 
     useEffect(() => {
       if (!loading && !isAuthenticated) {
-        router.push("/");
+        router.push("/login");
       }
     }, [loading, isAuthenticated, router]);
-
 
     // Show loading spinner while checking authentication
     if (loading) {
@@ -65,13 +64,14 @@ export default function CheckLogin(WrappedComponent) {
     }
 
     if (!isAuthenticated) {
-      return (
-        <div className="flex justify-center w-100 h-screen items-center">
-          <p className="font-bold text-3xl">Please login redirecting...</p>
-        </div>
-      );
+       <div className="w-full flex justify-center items-center">
+        <p className="font-bold text-3xl flex justify-center gap-2 items-center h-screen w-full">
+          Please login redirecting
+          <PulseLoader />
+        </p>
+      </div>
+   
     }
-
-    return <WrappedComponent {...props} />;
+    return <WrappedComponent {...props}></WrappedComponent>;
   };
 }
