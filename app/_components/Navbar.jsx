@@ -2,12 +2,31 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../_context/userAuth";
+import { useRouter } from "next/navigation";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [auth, setAuth] = useAuth();
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const router = useRouter();
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth");
+    setAuth(null);
+    router.push("/login");
   };
 
   return (
@@ -23,6 +42,12 @@ const Navbar = () => {
 
           <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
             <div className="flex space-x-12">
+              <Link
+                href="/"
+                className="text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200"
+              >
+                Home
+              </Link>
               <Link
                 href="/property"
                 className="text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200"
@@ -41,12 +66,37 @@ const Navbar = () => {
           {/* Auth links on right side */}
           <div className="hidden md:flex md:items-center">
             {auth?.user ? (
-              <button className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200">
-                Logout
-              </button>
+              <>
+                <Dialog
+                  open={logoutModalOpen}
+                  onOpenChange={setLogoutModalOpen}
+                >
+                  <DialogTrigger asChild>
+                    <button className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200">
+                      Logout
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogTitle>Confirm Logout</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to log out?
+                    </DialogDescription>
+                    <DialogFooter className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setLogoutModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button variant="destructive" onClick={handleLogout}>
+                        Logout
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </>
             ) : (
               <Link href="/login">
-                {" "}
                 <button className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200">
                   Login
                 </button>
@@ -59,7 +109,6 @@ const Navbar = () => {
             <button
               onClick={toggleMenu}
               className="text-white hover:bg-indigo-700 p-2 rounded-md focus:outline-none"
-              aria-expanded="false"
             >
               <span className="sr-only">Open main menu</span>
               {!isOpen ? (
@@ -114,13 +163,36 @@ const Navbar = () => {
             Water
           </Link>
           {auth?.user ? (
-            <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
-              Logout
-            </button>
+            <Dialog open={logoutModalOpen} onOpenChange={setLogoutModalOpen}>
+              <DialogTrigger asChild>
+                <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
+                  Logout
+                </button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogTitle>Confirm Logout</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to log out?
+                </DialogDescription>
+                <DialogFooter className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setLogoutModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           ) : (
-            <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
-              Login
-            </button>
+            <Link href="/login">
+              <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
+                Login
+              </button>
+            </Link>
           )}
         </div>
       </div>

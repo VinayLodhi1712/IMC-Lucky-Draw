@@ -56,9 +56,11 @@ export default function CheckLogin(WrappedComponent) {
     // Show loading spinner while checking authentication
     if (loading) {
       return (
-        <div className="flex justify-center w-100 h-screen items-center gap-4">
-          <p className="font-bold text-3xl">Checking Authentication</p>
-          <PulseLoader />
+        <div className="w-full flex justify-center items-center">
+          <p className="font-bold text-3xl flex justify-center gap-2 items-center h-screen w-full">
+             checking authentication
+            <PulseLoader />
+          </p>
         </div>
       );
     }

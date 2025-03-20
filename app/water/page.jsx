@@ -54,7 +54,7 @@ function WaterWinnersPage() {
       if (response.ok) {
         toast.success(`🎉 Winners selected for Zone ${zone}!`);
         console.log(data);
-        setWinners(data.winners); 
+        setWinners(data.winners);
       } else {
         toast.error(data.message || " Failed to select zone winners.");
       }
@@ -83,7 +83,7 @@ function WaterWinnersPage() {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      toast.success("✅ Excel file downloaded successfully!");
+      toast.success(" Excel file downloaded successfully!");
     } catch (err) {
       console.error("Excel Download Error:", err);
       toast.error(" Failed to download Excel.");
@@ -207,9 +207,7 @@ function WaterWinnersPage() {
                           {index + 1}
                         </TableCell>
                         <TableCell>{safeDisplay(winner.CONNECTION)}</TableCell>
-                        <TableCell>
-                          {safeDisplay(winner.NAME)}
-                        </TableCell>
+                        <TableCell>{safeDisplay(winner.NAME)}</TableCell>
                         <TableCell>{safeDisplay(winner.WARD)}</TableCell>
                         <TableCell>{safeDisplay(winner.ZONE)}</TableCell>
                         <TableCell>{safeDisplay(winner.ADDRESS)}</TableCell>

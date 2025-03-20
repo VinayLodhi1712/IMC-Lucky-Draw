@@ -38,10 +38,10 @@ function RandomWinnerPage() {
       }
 
       setWinners(Array.isArray(data) ? data : [data]);
-      toast.success(`✅ ${position} place winner(s) selected!`);
+      toast.success(` ${position} place winner(s) selected!`);
     } catch (err) {
       setError(err.message);
-      toast.error(`❌ ${err.message}`);
+      toast.error(` ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -70,10 +70,10 @@ function RandomWinnerPage() {
       }
 
       setWinners(data.winners || []);
-      toast.success(`✅ Zone ${zone} winners selected!`);
+      toast.success(`Zone ${zone} winners selected!`);
     } catch (err) {
       setError(err.message);
-      toast.error(`❌ ${err.message}`);
+      toast.error(` ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -99,7 +99,7 @@ function RandomWinnerPage() {
       toast.success("✅ Excel file downloaded successfully!");
     } catch (err) {
       console.error("Excel Download Error:", err);
-      toast.error("❌ Failed to download Excel.");
+      toast.error(" Failed to download Excel.");
     } finally {
       setLoadingExcel(false);
     }
