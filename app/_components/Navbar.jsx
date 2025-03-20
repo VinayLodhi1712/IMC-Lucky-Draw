@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../_context/userAuth";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Dialog,
   DialogTrigger,
@@ -32,11 +33,11 @@ const Navbar = () => {
   return (
     <nav className="bg-indigo-600 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between p-2">
           {/* Logo on left side */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-white font-bold text-2xl">
-              YourLogo
+           <Image src={"/imclogo.png"} width={100} height={100} alt="imc logo"></Image>
             </Link>
           </div>
 
