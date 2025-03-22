@@ -252,4 +252,4 @@ function RandomWinnerPage() {
   );
 }
 
-export default CheckLogin(RandomWinnerPage);
+export default RandomWinnerPage;

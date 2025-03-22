@@ -231,4 +231,4 @@ function WaterWinnersPage() {
   );
 }
 
-export default CheckLogin(WaterWinnersPage);
+export default WaterWinnersPage;
