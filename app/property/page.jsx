@@ -364,4 +364,4 @@ function RandomWinnerPage() {
   }
 }
 
-export default RandomWinnerPage;
+export default CheckLogin(RandomWinnerPage);

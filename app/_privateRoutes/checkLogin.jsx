@@ -13,12 +13,25 @@ export default function CheckLogin(WrappedComponent) {
 
     useEffect(() => {
       const checkAuth = async () => {
+        let storedAuth = localStorage.getItem("auth");
+        storedAuth = storedAuth ? JSON.parse(storedAuth) : null;
+
+        console.log("Stored Auth Before Sending:", storedAuth);
+
+        if (!storedAuth || !storedAuth.token) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          return;
+        }
+
+        setAuth(storedAuth);
+
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/userAuth`,
             {
               headers: {
-                authorization: auth?.token,
+                Authorization: `Bearer ${storedAuth.token}`,
               },
             }
           );
@@ -37,15 +50,9 @@ export default function CheckLogin(WrappedComponent) {
       };
 
       if (typeof window !== "undefined") {
-        const storedAuth = localStorage.getItem("auth");
-        if (storedAuth && auth?.token) {
-          checkAuth();
-        } else {
-          setIsAuthenticated(false);
-          setLoading(false);
-        }
+        checkAuth();
       }
-    }, [auth?.token]);
+    }, []);
 
     useEffect(() => {
       if (!loading && !isAuthenticated) {
@@ -53,12 +60,11 @@ export default function CheckLogin(WrappedComponent) {
       }
     }, [loading, isAuthenticated, router]);
 
-    // Show loading spinner while checking authentication
     if (loading) {
       return (
         <div className="w-full flex justify-center items-center">
           <p className="font-bold text-3xl flex justify-center gap-2 items-center h-screen w-full">
-             checking authentication
+            Checking authentication
             <PulseLoader />
           </p>
         </div>
@@ -66,14 +72,16 @@ export default function CheckLogin(WrappedComponent) {
     }
 
     if (!isAuthenticated) {
-       <div className="w-full flex justify-center items-center">
-        <p className="font-bold text-3xl flex justify-center gap-2 items-center h-screen w-full">
-          Please login redirecting
-          <PulseLoader />
-        </p>
-      </div>
-   
+      return (
+        <div className="w-full flex justify-center items-center">
+          <p className="font-bold text-3xl flex justify-center gap-2 items-center h-screen w-full">
+            Please login, redirecting...
+            <PulseLoader />
+          </p>
+        </div>
+      );
     }
-    return <WrappedComponent {...props}></WrappedComponent>;
+
+    return <WrappedComponent {...props} />;
   };
 }
