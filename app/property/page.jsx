@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import toast, { Toaster } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
+import CheckLogin from "../_privateRoutes/checkLogin";
 
 function RandomWinnerPage() {
   const [winners, setWinners] = useState([]);
@@ -269,10 +269,12 @@ function RandomWinnerPage() {
                     value={zone}
                     onChange={handleChange}
                   />
-                  
-                  {zoneError && <p className="text-red-500 text-sm">{zoneError}</p>}
+
+                  {zoneError && (
+                    <p className="text-red-500 text-sm">{zoneError}</p>
+                  )}
                 </div>
-                
+
                 <Button
                   onClick={() => !zoneError && fetchZoneWinners()}
                   disabled={loading || !!zoneError}
@@ -309,7 +311,9 @@ function RandomWinnerPage() {
       return (
         <div className="text-gray-500 italic text-center p-8 bg-gray-50 rounded-lg border border-gray-200">
           <p className="text-gray-500">No winners selected yet.</p>
-          <p className="text-sm mt-2">Use the button above to select winners.</p>
+          <p className="text-sm mt-2">
+            Use the button above to select winners.
+          </p>
         </div>
       );
     }
@@ -340,19 +344,25 @@ function RandomWinnerPage() {
                   key={index}
                   className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
                 >
-                  <TableCell className="font-medium">{safeDisplay(winner.SR_NO) || (index + 1)}</TableCell>
+                  <TableCell className="font-medium">
+                    {safeDisplay(winner.SR_NO) || index + 1}
+                  </TableCell>
                   <TableCell>
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {safeDisplay(winner.POSITION)}
                     </span>
                   </TableCell>
-                  <TableCell>{safeDisplay(winner.PROPERTY_OWNER_NAME)}</TableCell>
+                  <TableCell>
+                    {safeDisplay(winner.PROPERTY_OWNER_NAME)}
+                  </TableCell>
                   <TableCell>{safeDisplay(winner.PARTNER)}</TableCell>
                   <TableCell>{safeDisplay(winner.WARD)}</TableCell>
                   <TableCell>{safeDisplay(winner.ZONE)}</TableCell>
                   <TableCell>{safeDisplay(winner.ASSMENTYEAR)}</TableCell>
                   <TableCell>
-                    {winner.TAX_AMT ? `₹${parseFloat(winner.TAX_AMT).toLocaleString("en-IN")}` : "-"}
+                    {winner.TAX_AMT
+                      ? `₹${parseFloat(winner.TAX_AMT).toLocaleString("en-IN")}`
+                      : "-"}
                   </TableCell>
                 </TableRow>
               ))}
