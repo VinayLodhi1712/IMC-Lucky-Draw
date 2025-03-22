@@ -31,50 +31,82 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-indigo-600 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between p-2">
-          {/* Logo on left side */}
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-white font-bold text-2xl">
-           <Image src={"/imclogo.png"} width={100} height={100} alt="imc logo"></Image>
-            </Link>
-          </div>
+    <header>
+      {/* Top Bar */}
+      
 
-          <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2">
-            <div className="flex space-x-12">
-              <Link
-                href="/"
-                className="text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200"
-              >
-                Home
-              </Link>
-              <Link
-                href="/property"
-                className="text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200"
-              >
-                Property
-              </Link>
-              <Link
-                href="/water"
-                className="text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-lg font-medium transition-colors duration-200"
-              >
-                Water
-              </Link>
+      {/* Logo Bar */}
+      <div className="bg-white py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 mr-4">
+                <Link href="/">
+                  <Image src="/imclogo.png" width={80} height={80} alt="IMC logo" />
+                </Link>
+              </div>
+              <div>
+                <h1 className="font-bold text-2xl">IMC Lucky Draw Winner</h1>
+                <h2 className="text-gray-600 uppercase text-sm">Management Portal</h2>
+              </div>
+            </div>
+            <div>
+              <Image src="/digital-india.png" width={160} height={70} alt="Digital India logo" className="hidden md:block" />
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Auth links on right side */}
-          <div className="hidden md:flex md:items-center">
-            {auth?.user ? (
-              <>
+      {/* Navigation Bar */}
+      <nav className="bg-indigo-600 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
+            {/* Main Navigation */}
+            <div className="hidden md:block">
+              <div className="flex">
+                <Link
+                  href="/"
+                  className="text-white hover:bg-indigo-700 px-4 py-3 font-medium transition-colors duration-200"
+                >
+                  HOME
+                </Link>
+                <Link
+                  href="/property"
+                  className="text-white hover:bg-indigo-700 px-4 py-3 font-medium transition-colors duration-200"
+                >
+                  PROPERTY
+                </Link>
+                <Link
+                  href="/water"
+                  className="text-white hover:bg-indigo-700 px-4 py-3 font-medium transition-colors duration-200"
+                >
+                  WATER
+                </Link>
+                <Link
+                  href="/services"
+                  className="text-white hover:bg-indigo-700 px-4 py-3 font-medium transition-colors duration-200"
+                >
+                  SERVICES
+                </Link>
+                <Link
+                  href="/forms"
+                  className="text-white hover:bg-indigo-700 px-4 py-3 font-medium transition-colors duration-200"
+                >
+                  FORMS
+                </Link>
+              </div>
+            </div>
+
+            {/* Auth links */}
+            <div className="hidden md:flex md:items-center">
+              {auth?.user ? (
                 <Dialog
                   open={logoutModalOpen}
                   onOpenChange={setLogoutModalOpen}
                 >
                   <DialogTrigger asChild>
-                    <button className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200">
-                      Logout
+                    <button className="text-white hover:bg-indigo-700 px-4 py-3 font-medium">
+                      LOGOUT
                     </button>
                   </DialogTrigger>
                   <DialogContent>
@@ -95,109 +127,132 @@ const Navbar = () => {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-              </>
+              ) : (
+                <Link href="/login">
+                  <button className="text-white hover:bg-indigo-700 px-4 py-3 font-medium">
+                    LOGIN
+                  </button>
+                </Link>
+              )}
+              <button aria-label="More" className="text-white hover:bg-indigo-700 px-3 py-3">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden flex items-center">
+              <button
+                onClick={toggleMenu}
+                className="text-white hover:bg-indigo-700 p-2 rounded-md focus:outline-none"
+              >
+                <span className="sr-only">Open main menu</span>
+                {!isOpen ? (
+                  <svg
+                    className="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div className={`${isOpen ? "block" : "hidden"} md:hidden`}>
+          <div className="px-2 pt-2 pb-3 space-y-1 border-t border-indigo-700">
+            <Link
+              href="/"
+              className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+            >
+              HOME
+            </Link>
+            <Link
+              href="/property"
+              className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+            >
+              PROPERTY
+            </Link>
+            <Link
+              href="/water"
+              className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+            >
+              WATER
+            </Link>
+            <Link
+              href="/services"
+              className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+            >
+              SERVICES
+            </Link>
+            <Link
+              href="/forms"
+              className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+            >
+              FORMS
+            </Link>
+            {auth?.user ? (
+              <Dialog open={logoutModalOpen} onOpenChange={setLogoutModalOpen}>
+                <DialogTrigger asChild>
+                  <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-2 rounded-md font-medium">
+                    LOGOUT
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogTitle>Confirm Logout</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to log out?
+                  </DialogDescription>
+                  <DialogFooter className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => setLogoutModalOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button variant="destructive" onClick={handleLogout}>
+                      Logout
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             ) : (
               <Link href="/login">
-                <button className="text-white hover:bg-indigo-700 px-5 py-2 rounded-md text-lg font-medium border border-white hover:border-transparent transition-all duration-200">
-                  Login
+                <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-2 rounded-md font-medium">
+                  LOGIN
                 </button>
               </Link>
             )}
           </div>
-
-          {/* Mobile menu button */}
-          <div className="flex items-center md:hidden">
-            <button
-              onClick={toggleMenu}
-              className="text-white hover:bg-indigo-700 p-2 rounded-md focus:outline-none"
-            >
-              <span className="sr-only">Open main menu</span>
-              {!isOpen ? (
-                <svg
-                  className="h-8 w-8"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="h-8 w-8"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              )}
-            </button>
-          </div>
         </div>
-      </div>
-
-      {/* Mobile menu */}
-      <div className={`${isOpen ? "block" : "hidden"} md:hidden`}>
-        <div className="px-2 pt-2 pb-3 space-y-2 sm:px-3">
-          <Link
-            href="/property"
-            className="text-white hover:bg-indigo-700 block px-3 py-3 rounded-md text-lg font-medium"
-          >
-            Property
-          </Link>
-          <Link
-            href="/water"
-            className="text-white hover:bg-indigo-700 block px-3 py-3 rounded-md text-lg font-medium"
-          >
-            Water
-          </Link>
-          {auth?.user ? (
-            <Dialog open={logoutModalOpen} onOpenChange={setLogoutModalOpen}>
-              <DialogTrigger asChild>
-                <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
-                  Logout
-                </button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogTitle>Confirm Logout</DialogTitle>
-                <DialogDescription>
-                  Are you sure you want to log out?
-                </DialogDescription>
-                <DialogFooter className="flex justify-end gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setLogoutModalOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button variant="destructive" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <Link href="/login">
-              <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-3 rounded-md text-lg font-medium">
-                Login
-              </button>
-            </Link>
-          )}
-        </div>
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

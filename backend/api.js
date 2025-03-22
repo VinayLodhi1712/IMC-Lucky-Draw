@@ -543,6 +543,8 @@ app.get("/GenerateExcelWater", async (req, resp) => {
 app.post("/Login", async (req, resp) => {
   try {
     if (req.body.Password && req.body.Email) {
+      console.log("JWT Secret:", process.env.SECRET);
+
       let user = await Author.findOne(req.body);
       let token;
 
