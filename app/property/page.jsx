@@ -173,13 +173,10 @@ function RandomWinnerPage() {
           value={activeTab}
           onValueChange={handleTabChange}
         >
-          <div className="sm:h-auto h-[150px]">
+          <div className="mt-25 sm:mt-0 flex  flex-col justify-center items-center sm:items-start">
             {" "}
-            <TabsList className="flex flex-wrap gap-5 sm:gap-5 mb-3">
-              <TabsTrigger
-                value="first"
-                className="text-lg p-5  cursor-pointer"
-              >
+            <TabsList className="flex flex-col sm:flex-row gap-5 mb-5">
+              <TabsTrigger value="first" className="text-lg p-5 cursor-pointer">
                 🏆 First Place
               </TabsTrigger>
               <TabsTrigger
@@ -195,111 +192,18 @@ function RandomWinnerPage() {
                 🌎 Zone Winners
               </TabsTrigger>
             </TabsList>
-          </div>
-
-          <TabsContent
-            value="first"
-            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
-          >
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-4">
-                First Place Winners
-              </h2>
-              <Button
-                onClick={() => fetchWinner(1)}
-                disabled={loading}
-                className="mb-6 bg-blue-600 hover:bg-blue-700"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Selecting...
-                  </>
-                ) : (
-                  "Select 1st Place Winner"
-                )}
-              </Button>
-              {renderWinnersTable("1st Place")}
-            </div>
-          </TabsContent>
-
-          <TabsContent
-            value="second"
-            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
-          >
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-4">
-                Second Place Winners
-              </h2>
-              <Button
-                onClick={() => fetchWinner(2)}
-                disabled={loading}
-                className="mb-6 bg-yellow-600 hover:bg-yellow-700"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Selecting...
-                  </>
-                ) : (
-                  "Select 2nd Place Winners"
-                )}
-              </Button>
-              {renderWinnersTable("2nd Place")}
-            </div>
-          </TabsContent>
-
-          <TabsContent
-            value="third"
-            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
-          >
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-4">
-                Third Place Winners
-              </h2>
-              <Button
-                onClick={() => fetchWinner(3)}
-                disabled={loading}
-                className="mb-6 bg-orange-600 hover:bg-orange-700"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Selecting...
-                  </>
-                ) : (
-                  "Select 3rd Place Winners"
-                )}
-              </Button>
-              {renderWinnersTable("3rd Place")}
-            </div>
-          </TabsContent>
-
-          <TabsContent
-            value="zone"
-            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
-          >
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-semibold mb-4">Zone Winners</h2>
-              <div className="flex gap-4 mb-6">
-                <div className="flex flex-col gap-1 w-full max-w-xs">
-                  <input
-                    type="number"
-                    placeholder="Enter Zone Number"
-                    className="border rounded-md px-4 py-2 w-full"
-                    value={zone}
-                    onChange={handleChange}
-                  />
-
-                  {zoneError && (
-                    <p className="text-red-500 text-sm">{zoneError}</p>
-                  )}
-                </div>
-
+            <TabsContent
+              value="first"
+              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
+            >
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold mb-4">
+                  First Place Winners
+                </h2>
                 <Button
-                  onClick={() => !zoneError && fetchZoneWinners()}
-                  disabled={loading || !!zoneError}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={() => fetchWinner(1)}
+                  disabled={loading}
+                  className="mb-6 bg-blue-600 hover:bg-blue-700"
                 >
                   {loading ? (
                     <>
@@ -307,13 +211,102 @@ function RandomWinnerPage() {
                       Selecting...
                     </>
                   ) : (
-                    "Select Zone Winners"
+                    "Select 1st Place Winner"
                   )}
                 </Button>
+                {renderWinnersTable("1st Place")}
               </div>
-              {renderWinnersTable(`Zone ${zone}`)}
-            </div>
-          </TabsContent>
+            </TabsContent>
+            <TabsContent
+              value="second"
+              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
+            >
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold mb-4">
+                  Second Place Winners
+                </h2>
+                <Button
+                  onClick={() => fetchWinner(2)}
+                  disabled={loading}
+                  className="mb-6 bg-yellow-600 hover:bg-yellow-700"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Selecting...
+                    </>
+                  ) : (
+                    "Select 2nd Place Winners"
+                  )}
+                </Button>
+                {renderWinnersTable("2nd Place")}
+              </div>
+            </TabsContent>
+            <TabsContent
+              value="third"
+              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
+            >
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold mb-4">
+                  Third Place Winners
+                </h2>
+                <Button
+                  onClick={() => fetchWinner(3)}
+                  disabled={loading}
+                  className="mb-6 bg-orange-600 hover:bg-orange-700"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Selecting...
+                    </>
+                  ) : (
+                    "Select 3rd Place Winners"
+                  )}
+                </Button>
+                {renderWinnersTable("3rd Place")}
+              </div>
+            </TabsContent>
+            <TabsContent
+              value="zone"
+              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
+            >
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h2 className="text-xl font-semibold mb-4">Zone Winners</h2>
+                <div className="flex gap-4 mb-6">
+                  <div className="flex flex-col gap-1 w-full max-w-xs">
+                    <input
+                      type="number"
+                      placeholder="Enter Zone Number"
+                      className="border rounded-md px-4 py-2 w-full"
+                      value={zone}
+                      onChange={handleChange}
+                    />
+
+                    {zoneError && (
+                      <p className="text-red-500 text-sm">{zoneError}</p>
+                    )}
+                  </div>
+
+                  <Button
+                    onClick={() => !zoneError && fetchZoneWinners()}
+                    disabled={loading || !!zoneError}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Selecting...
+                      </>
+                    ) : (
+                      "Select Zone Winners"
+                    )}
+                  </Button>
+                </div>
+                {renderWinnersTable(`Zone ${zone}`)}
+              </div>
+            </TabsContent>
+          </div>
         </Tabs>
 
         {/* Error Message */}
@@ -395,4 +388,4 @@ function RandomWinnerPage() {
   }
 }
 
-export default CheckLogin(RandomWinnerPage);
+export default RandomWinnerPage;

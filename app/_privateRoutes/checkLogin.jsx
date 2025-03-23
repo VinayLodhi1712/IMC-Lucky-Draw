@@ -63,7 +63,7 @@ export default function CheckLogin(WrappedComponent) {
     if (loading) {
       return (
         <div className="w-full flex justify-center items-center">
-          <p className="font-bold text-3xl flex justify-center gap-2 items-center h-screen w-full">
+          <p className="font-bold text-2xl sm:text-3xl flex justify-center gap-2 items-center h-screen w-full">
             Checking authentication
             <PulseLoader />
           </p>
@@ -74,9 +74,8 @@ export default function CheckLogin(WrappedComponent) {
     if (!isAuthenticated) {
       return (
         <div className="w-full flex justify-center items-center">
-          <p className="font-bold text-3xl flex justify-center gap-2 items-center h-screen w-full">
-            Please login, redirecting...
-            <PulseLoader />
+          <p className="font-bold text-2xl sm:text-3xl flex justify-center gap-2 h-screen items-center w-full">
+            Please login, redirecting... 
           </p>
         </div>
       );
