@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 async function checkToken(req, resp, next) {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
       return resp
         .status(401)
         .json({ message: "Unauthorized: No valid token provided" });
@@ -11,8 +11,7 @@ async function checkToken(req, resp, next) {
 
     // Extract token by removing "Bearer "
     const token = authHeader.split(" ")[1];
-    console.log("Received Token:", token);
-    // Verify token
+
     jwt.verify(token, process.env.SECRET);
 
     next();

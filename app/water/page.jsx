@@ -172,22 +172,34 @@ function WaterWinnersPage() {
           value={activeTab}
           onValueChange={handleTabChange}
         >
-          <TabsList className="grid grid-cols-4 mb-8">
-            <TabsTrigger value="first" className="text-lg py-3">
-              🏆 First Place
-            </TabsTrigger>
-            <TabsTrigger value="second" className="text-lg py-3">
-              🥈 Second Place
-            </TabsTrigger>
-            <TabsTrigger value="third" className="text-lg py-3">
-              🥉 Third Place
-            </TabsTrigger>
-            <TabsTrigger value="zone" className="text-lg py-3">
-              🌎 Zone Winners
-            </TabsTrigger>
-          </TabsList>
+          <div className="sm:h-auto h-[150px]">
+            {" "}
+            <TabsList className="flex flex-wrap gap-5 sm:gap-5 mb-3">
+              <TabsTrigger
+                value="first"
+                className="text-lg p-5  cursor-pointer"
+              >
+                🏆 First Place
+              </TabsTrigger>
+              <TabsTrigger
+                value="second"
+                className="text-lg p-5 cursor-pointer"
+              >
+                🥈 Second Place
+              </TabsTrigger>
+              <TabsTrigger value="third" className="text-lg p-5 cursor-pointer">
+                🥉 Third Place
+              </TabsTrigger>
+              <TabsTrigger value="zone" className="text-lg p-5 cursor-pointer">
+                🌎 Zone Winners
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          <TabsContent value="first">
+          <TabsContent
+            value="first"
+            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
+          >
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4">
                 First Place Winners
@@ -210,7 +222,10 @@ function WaterWinnersPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="second">
+          <TabsContent
+            value="second"
+            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
+          >
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4">
                 Second Place Winners
@@ -233,7 +248,10 @@ function WaterWinnersPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="third">
+          <TabsContent
+            value="third"
+            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
+          >
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4">
                 Third Place Winners
@@ -256,7 +274,10 @@ function WaterWinnersPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="zone">
+          <TabsContent
+            value="zone"
+            className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem]"
+          >
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4">Zone Winners</h2>
               <div className="flex gap-4 mb-6">
@@ -268,10 +289,12 @@ function WaterWinnersPage() {
                     value={zone}
                     onChange={handleChange}
                   />
-                  
-                  {zoneError && <p className="text-red-500 text-sm">{zoneError}</p>}
+
+                  {zoneError && (
+                    <p className="text-red-500 text-sm">{zoneError}</p>
+                  )}
                 </div>
-                
+
                 <Button
                   onClick={() => !zoneError && fetchZoneWinners()}
                   disabled={loading || !!zoneError}
@@ -308,7 +331,9 @@ function WaterWinnersPage() {
       return (
         <div className="text-gray-500 italic text-center p-8 bg-gray-50 rounded-lg border border-gray-200">
           <p className="text-gray-500">No winners selected yet.</p>
-          <p className="text-sm mt-2">Use the button above to select winners.</p>
+          <p className="text-sm mt-2">
+            Use the button above to select winners.
+          </p>
         </div>
       );
     }

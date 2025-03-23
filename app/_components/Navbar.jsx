@@ -13,16 +13,16 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [auth, setAuth] = useAuth();
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const router = useRouter();
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("auth");
@@ -32,12 +32,10 @@ const Navbar = () => {
 
   return (
     <header>
-      {/* Top Bar */}
-
       {/* Logo Bar */}
       <div className="bg-blue-400 py-3">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-around">
+          <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="flex-shrink-0 mr-4">
                 <Link href="/">
@@ -54,153 +52,108 @@ const Navbar = () => {
                   INDORE MUNICIPAL
                 </h1>
                 <h1 className="font-extrabold text-xl text-center text-white tracking-wide">
-                  {" "}
                   CORPORATION
                 </h1>
               </div>
             </div>
 
-            {/* Navigation Bar */}
-            <nav className="">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between">
-                  {/* Main Navigation */}
-                  <div className="hidden md:block">
-                    <div className="flex gap-10">
-                      <Link
-                        href="/"
-                        className="text-white hover:bg-blue-500 px-4 py-3 font-medium transition-colors duration-200 rounded-2xl"
-                      >
-                        HOME
-                      </Link>
-                      <Link
-                        href="/property"
-                        className="text-white hover:bg-blue-500 px-4 py-3 font-medium transition-colors duration-200  rounded-2xl"
-                      >
-                        PROPERTY
-                      </Link>
-                      <Link
-                        href="/water"
-                        className="text-white hover:bg-blue-500 px-4 py-3 font-medium transition-colors duration-200 rounded-2xl"
-                      >
-                        WATER
-                      </Link>
-                      {auth?.user ? (
-                        <Dialog
-                          open={logoutModalOpen}
-                          onOpenChange={setLogoutModalOpen}
+            {/* Desktop Navigation */}
+            <nav className="hidden md:block">
+              <div className="flex gap-10">
+                <Link
+                  href="/"
+                  className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl"
+                >
+                  HOME
+                </Link>
+                <Link
+                  href="/property"
+                  className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl"
+                >
+                  PROPERTY
+                </Link>
+                <Link
+                  href="/water"
+                  className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl"
+                >
+                  WATER
+                </Link>
+                {auth?.user ? (
+                  <Dialog
+                    open={logoutModalOpen}
+                    onOpenChange={setLogoutModalOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <button className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl">
+                        LOGOUT
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogTitle>Confirm Logout</DialogTitle>
+                      <DialogDescription>
+                        Are you sure you want to log out?
+                      </DialogDescription>
+                      <DialogFooter className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => setLogoutModalOpen(false)}
                         >
-                          <DialogTrigger asChild>
-                            <button className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl">
-                              LOGOUT
-                            </button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogTitle>Confirm Logout</DialogTitle>
-                            <DialogDescription>
-                              Are you sure you want to log out?
-                            </DialogDescription>
-                            <DialogFooter className="flex justify-end gap-2">
-                              <Button
-                                variant="outline"
-                                onClick={() => setLogoutModalOpen(false)}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                onClick={handleLogout}
-                              >
-                                Logout
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      ) : (
-                        <Link href="/login">
-                          <button className="text-white hover:bg-blue-900 px-4 py-3 font-medium">
-                            LOGIN
-                          </button>
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Mobile menu button */}
-                  <div className="md:hidden flex items-center">
-                    <button
-                      onClick={toggleMenu}
-                      className="text-white hover:bg-indigo-700 p-2 rounded-md focus:outline-none"
-                    >
-                      <span className="sr-only">Open main menu</span>
-                      {!isOpen ? (
-                        <svg
-                          className="h-6 w-6"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 6h16M4 12h16M4 18h16"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="h-6 w-6"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      )}
+                          Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleLogout}>
+                          Logout
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                ) : (
+                  <Link href="/login">
+                    <button className="text-white hover:bg-blue-900 px-4 py-3 font-medium">
+                      LOGIN
                     </button>
-                  </div>
-                </div>
+                  </Link>
+                )}
               </div>
+            </nav>
 
-              {/* Mobile menu */}
-              <div className={`${isOpen ? "block" : "hidden"} md:hidden`}>
-                <div className="px-2 pt-2 pb-3 space-y-1 border-t border-indigo-700">
+            {/* Mobile Menu Button */}
+            <div className="md:hidden">
+              <IconButton onClick={() => setIsDrawerOpen(true)}>
+                <MenuIcon className="text-white" />
+              </IconButton>
+            </div>
+
+            {/* MUI Drawer for Mobile Menu */}
+            <Drawer
+              anchor="left"
+              open={isDrawerOpen}
+              onClose={() => setIsDrawerOpen(false)}
+            >
+              <div className="w-64 p-4 bg-blue-500 h-full text-white">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-bold">Menu</h2>
+                  <IconButton onClick={() => setIsDrawerOpen(false)}>
+                    <CloseIcon className="text-white" />
+                  </IconButton>
+                </div>
+                <nav className="flex flex-col space-y-3">
                   <Link
                     href="/"
-                    className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+                    className="hover:bg-blue-700 px-3 py-2 rounded-md font-medium"
                   >
                     HOME
                   </Link>
                   <Link
                     href="/property"
-                    className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+                    className="hover:bg-blue-700 px-3 py-2 rounded-md font-medium"
                   >
                     PROPERTY
                   </Link>
                   <Link
                     href="/water"
-                    className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
+                    className="hover:bg-blue-700 px-3 py-2 rounded-md font-medium"
                   >
                     WATER
-                  </Link>
-                  <Link
-                    href="/services"
-                    className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
-                  >
-                    SERVICES
-                  </Link>
-                  <Link
-                    href="/forms"
-                    className="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md font-medium"
-                  >
-                    FORMS
                   </Link>
                   {auth?.user ? (
                     <Dialog
@@ -208,7 +161,7 @@ const Navbar = () => {
                       onOpenChange={setLogoutModalOpen}
                     >
                       <DialogTrigger asChild>
-                        <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-2 rounded-md font-medium">
+                        <button className="hover:bg-blue-700 px-3 py-2 rounded-md font-medium w-full text-left">
                           LOGOUT
                         </button>
                       </DialogTrigger>
@@ -232,23 +185,22 @@ const Navbar = () => {
                     </Dialog>
                   ) : (
                     <Link href="/login">
-                      <button className="text-white hover:bg-indigo-700 w-full text-left px-3 py-2 rounded-md font-medium">
+                      <button className="hover:bg-blue-700 px-3 py-2 rounded-md font-medium w-full text-left">
                         LOGIN
                       </button>
                     </Link>
                   )}
-                </div>
+                </nav>
               </div>
-            </nav>
+            </Drawer>
 
-            {/* right image  */}
-            <div>
+            {/* Right Image */}
+            <div className="hidden md:block">
               <Image
                 src="/digital-india.png"
                 width={160}
                 height={70}
                 alt="Digital India logo"
-                className="hidden md:block"
               />
             </div>
           </div>
