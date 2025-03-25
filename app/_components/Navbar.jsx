@@ -32,206 +32,123 @@ const Navbar = () => {
     router.push("/login");
   };
 
+  const navItems = [
+    { name: "HOME", href: "/", icon: <FaHome className="text-xl" /> },
+    {
+      name: "PROPERTY",
+      href: "/property",
+      icon: <FaBuilding className="text-xl" />,
+    },
+    {
+      name: "WATER",
+      href: "/water",
+      icon: <FaHandHoldingWater className="text-xl" />,
+    },
+  ];
+
   return (
-    <header>
-      {/* Logo Bar */}
-      <div className="bg-blue-400 py-3">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 mr-4">
-                <Link href="/">
-                  <Image
-                    src="/imclogo.png"
-                    width={70}
-                    height={70}
-                    alt="IMC logo"
-                  />
-                </Link>
-              </div>
-              <div>
-                <h1 className="font-extrabold text-xl text-white tracking-wide">
-                  INDORE MUNICIPAL
-                </h1>
-                <h1 className="font-extrabold text-xl text-center text-white tracking-wide">
-                  CORPORATION
-                </h1>
-              </div>
-            </div>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden md:block">
-              <div className="flex gap-10">
-                <Link
-                  href="/"
-                  className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl"
-                >
-                  HOME
-                </Link>
-                <Link
-                  href="/property"
-                  className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl"
-                >
-                  PROPERTY
-                </Link>
-                <Link
-                  href="/water"
-                  className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl"
-                >
-                  WATER
-                </Link>
-                {auth?.user ? (
-                  <Dialog
-                    open={logoutModalOpen}
-                    onOpenChange={setLogoutModalOpen}
-                  >
-                    <DialogTrigger asChild>
-                      <button className="text-white hover:bg-blue-500 px-4 py-3 font-medium rounded-2xl">
-                        LOGOUT
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogTitle>Confirm Logout</DialogTitle>
-                      <DialogDescription>
-                        Are you sure you want to log out?
-                      </DialogDescription>
-                      <DialogFooter className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={() => setLogoutModalOpen(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button variant="destructive" onClick={handleLogout}>
-                          Logout
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                ) : (
-                  <Link href="/login">
-                    <button className="text-white hover:bg-blue-900 px-4 py-3 font-medium">
-                      LOGIN
-                    </button>
-                  </Link>
-                )}
-              </div>
-            </nav>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <IconButton onClick={() => setIsDrawerOpen(true)}>
-                <MenuIcon className="text-white" />
-              </IconButton>
-            </div>
-
-            {/* MUI Drawer for Mobile Menu */}
-            <Drawer
-              anchor="left"
-              open={isDrawerOpen}
-              onClose={() => setIsDrawerOpen(false)}
-            >
-              <div className="w-64 p-6 bg-blue-500 h-full text-white flex flex-col">
-                {/* Close Button */}
-                <div className="flex justify-end mb-4">
-                  <IconButton onClick={() => setIsDrawerOpen(false)}>
-                    <CloseIcon className="text-white hover:text-gray-200 transition-all" />
-                  </IconButton>
-                </div>
-
-                {/* Navigation */}
-                <nav className="flex flex-col space-y-4">
-                  {/* Home */}
-                  <Link
-                    href="/"
-                    className="flex items-center gap-3 text-lg font-medium hover:bg-blue-600 p-2 rounded-lg transition-all"
-                    onClick={() => setIsDrawerOpen(false)}
-                  >
-                    <FaHome className="text-xl" />
-                    HOME
-                  </Link>
-
-                  {/* Property */}
-                  <Link
-                    href="/property"
-                    className="flex items-center gap-3 text-lg font-medium hover:bg-blue-600 p-2 rounded-lg transition-all"
-                    onClick={() => setIsDrawerOpen(false)}
-                  >
-                    <FaBuilding className="text-xl" />
-                    PROPERTY
-                  </Link>
-
-                  {/* Water */}
-                  <Link
-                    href="/water"
-                    className="flex items-center gap-3 text-lg font-medium hover:bg-blue-600 p-2 rounded-lg transition-all"
-                    onClick={() => setIsDrawerOpen(false)}
-                  >
-                    <FaHandHoldingWater className="text-xl" />
-                    WATER
-                  </Link>
-
-                  {/* Login / Logout */}
-                  <hr className="border-white/40 my-2" />
-                  {auth?.user ? (
-                    <Dialog
-                      open={logoutModalOpen}
-                      onOpenChange={setLogoutModalOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <button
-                          className="flex items-center gap-3 text-lg font-medium hover:bg-red-600 p-2 rounded-lg transition-all w-full text-left"
-                          onClick={() => setIsDrawerOpen(false)}
-                        >
-                          <HiOutlineLogout className="text-xl" />
-                          LOGOUT
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogTitle className="text-gray-800">
-                          Confirm Logout
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-600">
-                          Are you sure you want to log out?
-                        </DialogDescription>
-                        <DialogFooter className="flex justify-end gap-3">
-                          <Button
-                            variant="outline"
-                            className="border-gray-400 text-gray-700"
-                            onClick={() => setLogoutModalOpen(false)}
-                          >
-                            Cancel
-                          </Button>
-                          <Button variant="destructive" onClick={handleLogout}>
-                            Logout
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  ) : (
-                    <Link
-                      href="/login"
-                      className="flex items-center gap-3 text-lg font-medium hover:bg-green-600 p-2 rounded-lg transition-all"
-                      onClick={() => setIsDrawerOpen(false)}
-                    >
-                      <HiOutlineLogout className="text-xl" />
-                      LOGIN
-                    </Link>
-                  )}
-                </nav>
-              </div>
-            </Drawer>
-
-            {/* Right Image */}
-            <div className="hidden md:block">
-              <Image
-                src="/digital-india.png"
-                width={160}
-                height={70}
-                alt="Digital India logo"
-              />
+    <header className="fixed w-full">
+      <div className="mx-auto py-3 px-4 sm:px-6 lg:px-8 bg-[rgba(60,60,60,0.5)]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 mr-4">
+              <Link href="/">
+                <Image
+                  src="/imc-logo.svg"
+                  width={300}
+                  height={300}
+                  alt="IMC logo"
+                />
+              </Link>
             </div>
           </div>
+          <nav className="hidden md:block">
+            <div className="flex gap-10">
+              {navItems.map((item, index) => (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="text-white text-lg font-medium px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[rgba(60,60,60,0.3)] hover:shadow-md cursor-pointer flex items-center gap-2"
+                >
+                  {item.icon}
+                  {item.name}
+                </Link>
+              ))}
+              {auth?.user ? (
+                <Dialog
+                  open={logoutModalOpen}
+                  onOpenChange={setLogoutModalOpen}
+                >
+                  <DialogTrigger asChild>
+                    <button className="text-white bg-[rgba(60,60,60,0.3)]  px-4 py-3 font-medium rounded-2xl cursor-pointer flex gap-2 items-center">
+                      <HiOutlineLogout className="text-xl" /> LOGOUT
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogTitle>Confirm Logout</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to log out?
+                    </DialogDescription>
+                    <DialogFooter className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setLogoutModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button onClick={handleLogout}>Logout</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              ) : (
+                <Link href="/login">
+                  <button className="text-white bg-[rgba(60,60,60,0.3)]  px-4 py-3 font-medium">
+                    LOGIN
+                  </button>
+                </Link>
+              )}
+            </div>
+          </nav>
+          <div className="md:hidden">
+            <IconButton onClick={() => setIsDrawerOpen(true)}>
+              <MenuIcon className="text-white" />
+            </IconButton>
+          </div>
+          <Drawer
+            anchor="right"
+            open={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+          >
+            <div className="w-64 p-6 bg-[#1E3E62] h-full text-white flex flex-col">
+              <div className="flex justify-end mb-4">
+                <IconButton onClick={() => setIsDrawerOpen(false)}>
+                  <CloseIcon className="text-white hover:text-gray-200 transition-all" />
+                </IconButton>
+              </div>
+              <nav className="flex flex-col space-y-4">
+                {navItems.map((item, index) => (
+                  <Link
+                    key={index}
+                    href={item.href}
+                    className="flex items-center gap-3 text-lg font-medium bg-[rgba(60,60,60,0.3)]  p-2 rounded-lg transition-all"
+                    onClick={() => setIsDrawerOpen(false)}
+                  >
+                    {item.icon}
+                    {item.name}
+                  </Link>
+                ))}
+                {auth?.user && (
+                  <button
+                    className="flex items-center gap-3 text-lg font-medium bg-[rgba(60,60,60,0.3)]  p-2 rounded-lg transition-all"
+                    onClick={handleLogout}
+                  >
+                    <HiOutlineLogout className="text-xl" />
+                    LOGOUT
+                  </button>
+                )}
+              </nav>
+            </div>
+          </Drawer>
         </div>
       </div>
     </header>

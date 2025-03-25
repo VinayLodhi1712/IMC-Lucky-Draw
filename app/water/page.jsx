@@ -135,7 +135,7 @@ function WaterWinnersPage() {
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4">
       <Toaster position="top-right" reverseOrder={false} />
 
-      <div className="w-full max-w-6xl">
+      <div className="w-full max-w-6xl  mt-20">
         <h1 className="text-3xl font-bold text-center my-6">
           Water Winners Management
         </h1>
