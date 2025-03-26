@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -13,6 +13,11 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import CheckLogin from "../_privateRoutes/checkLogin";
+import dynamic from "next/dynamic";
+
+const ReactConfetti = dynamic(() => import("react-confetti"), {
+  ssr: false,
+});
 
 function RandomWinnerPage() {
   const [winners, setWinners] = useState([]);
@@ -22,6 +27,44 @@ function RandomWinnerPage() {
   const [zoneError, setZoneError] = useState("");
   const [activeTab, setActiveTab] = useState("first");
   const [zone, setZone] = useState("");
+
+  //confetti state
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiKey, setConfettiKey] = useState(0);
+  const [confettiProps, setConfettiProps] = useState({
+    width: 0,
+    height: 0,
+    numberOfPieces: 500,
+    recycle: false,
+    gravity: 0.3,
+  });
+
+  useEffect(() => {
+    function updateDimensions() {
+      setConfettiProps(prev => ({
+        ...prev,
+        width: window.innerWidth,
+        height: document.documentElement.scrollHeight
+      }));
+    }
+
+    window.addEventListener('resize', updateDimensions);
+    window.addEventListener('scroll', updateDimensions);
+    
+    // Initial call to set dimensions
+    updateDimensions();
+    
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+      window.removeEventListener('scroll', updateDimensions);
+    };
+  }, []);
+
+  const triggerConfetti = () => {
+    // Increment the key to force a re-render of the Confetti component
+    setConfettiKey(prev => prev + 1);
+    setShowConfetti(true);
+  };
 
   const fetchWinner = async (position) => {
     setLoading(true);
@@ -39,6 +82,7 @@ function RandomWinnerPage() {
 
       setWinners(Array.isArray(data) ? data : [data]);
       toast.success(`${position} place winner(s) selected!`);
+      triggerConfetti();
     } catch (err) {
       setError(err.message);
       toast.error(`${err.message}`);
@@ -70,6 +114,7 @@ function RandomWinnerPage() {
 
       setWinners(data.winners || []);
       toast.success(`Zone ${zone} winners selected!`);
+      triggerConfetti();  
     } catch (err) {
       setError(err.message);
       toast.error(`${err.message}`);
@@ -135,6 +180,29 @@ function RandomWinnerPage() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4 ">
       <Toaster position="top-right" reverseOrder={false} />
+      {showConfetti && (
+        <ReactConfetti
+          key={confettiKey}  // Add key to force re-render
+          width={confettiProps.width}
+          height={confettiProps.height}
+          recycle={false}
+          numberOfPieces={confettiProps.numberOfPieces}
+          gravity={confettiProps.gravity}
+          initialVelocityY={10}
+          confettiSource={{
+            x: 0,
+            y: 0,
+            w: confettiProps.width,
+            h: 0
+          }}
+          onConfettiComplete={(confetti) => {
+            if (confetti.totalPieces === 0) {
+              setShowConfetti(false);
+            }
+          }}
+        />
+      )}
+
 
       <div className="w-full max-w-6xl mt-20">
         <h1 className="text-3xl font-bold text-center my-6">
