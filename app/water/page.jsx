@@ -30,15 +30,16 @@ function WaterWinnersPage() {
   const [zone, setZone] = useState("");
 
   // Confetti state
-  const [showConfetti, setShowConfetti] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [confettiKey, setConfettiKey] = useState(0);
   const [confettiProps, setConfettiProps] = useState({
     width: 0,
     height: 0,
-    numberOfPieces: 0,
-    initialVelocityY: 15,
-    gravity: 0.5,
-    run: false,
+    numberOfPieces: 500,
+    recycle: false,
+    gravity: 0.3,
   });
+
   // Update window size on resize
   useEffect(() => {
     function updateDimensions() {
@@ -61,13 +62,8 @@ function WaterWinnersPage() {
     };
   }, []);
 
-  const triggerConfetti = () => {
-    setConfettiProps((prev) => ({
-      ...prev,
-      numberOfPieces: 500,
-      gravity: 0.3,
-      run: true,
-    }));
+  const triggerConfetti = () => { 
+    setConfettiKey(prev => prev + 1);
     setShowConfetti(true);
   };
 
@@ -192,12 +188,12 @@ function WaterWinnersPage() {
       {/* Confetti effect */}
       {showConfetti && (
         <ReactConfetti
+          key={confettiKey}  // Add key to force re-render
           width={confettiProps.width}
           height={confettiProps.height}
           recycle={false}
           numberOfPieces={confettiProps.numberOfPieces}
           gravity={confettiProps.gravity}
-          run={confettiProps.run}
           initialVelocityY={10}
           confettiSource={{
             x: 0,
@@ -208,15 +204,17 @@ function WaterWinnersPage() {
           onConfettiComplete={(confetti) => {
             if (confetti.totalPieces === 0) {
               setShowConfetti(false);
-              setConfettiProps((prev) => ({
+              setConfettiProps(prev => ({
                 ...prev,
                 numberOfPieces: 0,
-                run: false,
+                run: false
               }));
             }
           }}
         />
       )}
+
+
 
       <div className="w-full max-w-6xl">
         <h1 className="text-3xl font-bold text-center my-6">
