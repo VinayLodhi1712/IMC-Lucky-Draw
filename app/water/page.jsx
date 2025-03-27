@@ -188,7 +188,7 @@ function WaterWinnersPage() {
       {/* Confetti effect */}
       {showConfetti && (
         <ReactConfetti
-          key={confettiKey}  // Add key to force re-render
+          key={confettiKey} // Add key to force re-render
           width={confettiProps.width}
           height={confettiProps.height}
           recycle={false}
@@ -204,19 +204,17 @@ function WaterWinnersPage() {
           onConfettiComplete={(confetti) => {
             if (confetti.totalPieces === 0) {
               setShowConfetti(false);
-              setConfettiProps(prev => ({
+              setConfettiProps((prev) => ({
                 ...prev,
                 numberOfPieces: 0,
-                run: false
+                run: false,
               }));
             }
           }}
         />
       )}
 
-
-
-      <div className="w-full max-w-6xl">
+      <div className="w-full max-w-6xl mt-20">
         <h1 className="text-3xl font-bold text-center my-6">
           Water Winners Management
         </h1>

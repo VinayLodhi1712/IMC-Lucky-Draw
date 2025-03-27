@@ -312,13 +312,11 @@ app.get("/water_random-winner_1", async (req, resp) => {
 
       // Insert into Water Winners collection
       await WaterWinners.create({
-        PARTNER: winner.PARTNER,
-        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        CONNECTION: winner.CONNECTION,
+        NAME: winner.NAME,
         WARD: winner.WARD,
         ZONE: winner.ZONE,
-        ASSMENTYEAR: winner.ASSMENTYEAR,
-        TAX_AMT: winner.TAX_AMT,
-        SR_NO: winner.SR_NO,
+        ADDRESS: winner.ADDRESS,
         POSITION: "1st",
       });
 
@@ -349,13 +347,11 @@ app.get("/water_random-winner_2", async (req, resp) => {
 
     if (result.length > 0) {
       const winners = result.map((winner, index) => ({
-        PARTNER: winner.PARTNER,
-        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        CONNECTION: winner.CONNECTION,
+        NAME: winner.NAME,
         WARD: winner.WARD,
         ZONE: winner.ZONE,
-        ASSMENTYEAR: winner.ASSMENTYEAR,
-        TAX_AMT: winner.TAX_AMT,
-        SR_NO: winner.SR_NO,
+        ADDRESS: winner.ADDRESS,
         POSITION: "2nd",
       }));
 
@@ -396,13 +392,11 @@ app.get("/water_random-winner_3", async (req, resp) => {
 
     if (result.length > 0) {
       const winners = result.map((winner, index) => ({
-        PARTNER: winner.PARTNER,
-        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        CONNECTION: winner.CONNECTION,
+        NAME: winner.NAME,
         WARD: winner.WARD,
         ZONE: winner.ZONE,
-        ASSMENTYEAR: winner.ASSMENTYEAR,
-        TAX_AMT: winner.TAX_AMT,
-        SR_NO: winner.SR_NO,
+        ADDRESS: winner.ADDRESS,
         POSITION: "3rd",
       }));
 
@@ -457,13 +451,11 @@ app.get("/water_random-zone-winners/:zoneNumber", async (req, resp) => {
       );
 
       const winnersData = result.map((winner, index) => ({
-        PARTNER: winner.PARTNER,
-        PROPERTY_OWNER_NAME: winner.PROPERTY_OWNER_NAME,
+        CONNECTION: winner.CONNECTION,
+        NAME: winner.NAME,
         WARD: winner.WARD,
         ZONE: winner.ZONE,
-        ASSMENTYEAR: winner.ASSMENTYEAR,
-        TAX_AMT: winner.TAX_AMT,
-        SR_NO: winner.SR_NO,
+        ADDRESS: winner.ADDRESS,
         POSITION: `Zone ${zoneNumber}`, // Assign positions
       }));
 
