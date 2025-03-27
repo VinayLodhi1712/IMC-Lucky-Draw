@@ -42,31 +42,31 @@ function WaterWinnersPage() {
   // Update window size on resize
   useEffect(() => {
     function updateDimensions() {
-      setConfettiProps(prev => ({
+      setConfettiProps((prev) => ({
         ...prev,
         width: window.innerWidth,
-        height: document.documentElement.scrollHeight
+        height: document.documentElement.scrollHeight,
       }));
     }
 
-    window.addEventListener('resize', updateDimensions);
-    window.addEventListener('scroll', updateDimensions);
-    
+    window.addEventListener("resize", updateDimensions);
+    window.addEventListener("scroll", updateDimensions);
+
     // Initial call to set dimensions
     updateDimensions();
-    
+
     return () => {
-      window.removeEventListener('resize', updateDimensions);
-      window.removeEventListener('scroll', updateDimensions);
+      window.removeEventListener("resize", updateDimensions);
+      window.removeEventListener("scroll", updateDimensions);
     };
   }, []);
 
   const triggerConfetti = () => {
-    setConfettiProps(prev => ({
+    setConfettiProps((prev) => ({
       ...prev,
-      numberOfPieces: 500,  
+      numberOfPieces: 500,
       gravity: 0.3,
-      run: true
+      run: true,
     }));
     setShowConfetti(true);
   };
@@ -203,15 +203,15 @@ function WaterWinnersPage() {
             x: 0,
             y: 0,
             w: confettiProps.width,
-            h: 0
+            h: 0,
           }}
           onConfettiComplete={(confetti) => {
             if (confetti.totalPieces === 0) {
               setShowConfetti(false);
-              setConfettiProps(prev => ({
+              setConfettiProps((prev) => ({
                 ...prev,
                 numberOfPieces: 0,
-                run: false
+                run: false,
               }));
             }
           }}

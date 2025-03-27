@@ -47,7 +47,7 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="fixed w-full">
+    <header className="fixed w-full z-[2]">
       <div className="mx-auto py-3 px-4 sm:px-6 lg:px-8 bg-[rgba(60,60,60,0.5)]">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -58,6 +58,7 @@ const Navbar = () => {
                   width={300}
                   height={300}
                   alt="IMC logo"
+                  className="lg:w-[300px] w-[200px]"
                 />
               </Link>
             </div>
@@ -68,7 +69,7 @@ const Navbar = () => {
                 <Link
                   key={index}
                   href={item.href}
-                  className="text-white text-lg font-medium px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[rgba(60,60,60,0.3)] hover:shadow-md cursor-pointer flex items-center gap-2"
+                  className="text-white  lg:text-lg  text-sm font-medium px-4 py-2 rounded-lg transition-all duration-300 hover:bg-[rgba(60,60,60,0.3)] hover:shadow-md cursor-pointer flex items-center gap-2"
                 >
                   {item.icon}
                   {item.name}
