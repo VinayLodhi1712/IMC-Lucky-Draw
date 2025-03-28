@@ -66,7 +66,7 @@ function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-[640px] bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20">
       <Toaster
         position="top-right"
         reverseOrder={false}
@@ -121,12 +121,6 @@ function Login() {
                 <Label htmlFor="password" className="text-sm font-medium">
                   Password
                 </Label>
-                <Button
-                  variant="link"
-                  className="p-0 h-auto text-xs font-normal text-muted-foreground hover:text-primary"
-                >
-                  Forgot password?
-                </Button>
               </div>
               <div className="relative">
                 <Input

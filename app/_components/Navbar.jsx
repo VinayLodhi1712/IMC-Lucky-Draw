@@ -19,6 +19,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { FaHome, FaBuilding, FaHandHoldingWater } from "react-icons/fa";
 import { HiOutlineLogout } from "react-icons/hi";
+import { CiLogin } from "react-icons/ci";
 
 const Navbar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -81,7 +82,7 @@ const Navbar = () => {
                   onOpenChange={setLogoutModalOpen}
                 >
                   <DialogTrigger asChild>
-                    <button className="text-white bg-[rgba(60,60,60,0.3)]  px-4 py-3 font-medium rounded-2xl cursor-pointer flex gap-2 items-center">
+                    <button className="text-white hover:bg-[rgba(60,60,60,0.3)]  px-4 py-3 font-medium rounded-2xl cursor-pointer flex gap-2 items-center">
                       <HiOutlineLogout className="text-xl" /> LOGOUT
                     </button>
                   </DialogTrigger>
@@ -103,8 +104,8 @@ const Navbar = () => {
                 </Dialog>
               ) : (
                 <Link href="/login">
-                  <button className="text-white bg-[rgba(60,60,60,0.3)]  px-4 py-3 font-medium">
-                    LOGIN
+                  <button className="text-white bg-[rgba(60,60,60,0.3)]  rounded-2xl  px-4 py-3 font-medium flex items-center gap-2 cursor-pointer">
+                    <CiLogin className="text-xl" /> LOGIN
                   </button>
                 </Link>
               )}
