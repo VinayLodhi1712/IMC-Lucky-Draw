@@ -41,7 +41,7 @@ function Login() {
       const result = await response.json();
 
       if (response.ok) {
-        toast.success("Login Successful !");
+        toast.success("Login Successful");
         localStorage.setItem(
           "auth",
           JSON.stringify({

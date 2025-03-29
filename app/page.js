@@ -1,6 +1,36 @@
 // import { FaTrophy } from "react-icons/fa";
-// import Image from "next/image";
+import Image from "next/image";
 
+const prizes = [
+  {
+    position: "1st",
+    emoji: "🏆",
+    winners: "1 Winner",
+    prize: "Electric Car",
+    image: "/car.png",
+  },
+  {
+    position: "2nd",
+    emoji: "🥈",
+    winners: "3 Winners",
+    prize: "Electric Scooty",
+    image: "/scooty.png",
+  },
+  {
+    position: "3rd",
+    emoji: "🥉",
+    winners: "5 Winners",
+    prize: "LCD TV",
+    image: "/tv.png",
+  },
+  {
+    position: "4th",
+    emoji: "🎁",
+    winners: "5 Winners from each zone",
+    prize: "Mixer Grinder",
+    image: "/mixer.jpeg",
+  },
+];
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen font-[family-name:var(--font-geist-sans)] relative">
@@ -15,37 +45,76 @@ export default function Home() {
       ></video>
 
       {/* overview section  */}
-      <div className="mt-5 mb-5">
-        <p className="text-2xl tracking-wider font-bold text-center text-[#212529]">
-          Lucky Draw Event
-        </p>
-        <p className="text-lg tracking-wider text-center text-[#212529] w-3/4 m-auto mt-2">
-          Indore Municipal Corporation (IMC) is organizing a special Lucky Draw
-          Event to encourage timely payment of advance property tax and water
-          tax. Citizens who have paid their advance property tax and water tax
-          are eligible to participate in this exciting lucky draw and stand a
-          chance to win amazing prizes.
-        </p>
+      <div className="mt-5 mb-5 flex flex-col md:flex-row items-center justify-around bg-gray-50 sm:p-6 rounded-lg shadow-lg">
+        {/* Left Side - Text */}
+        <div className="md:w-1/2 text-center md:text-left">
+          <p className="text-xl sm:text-3xl tracking-wider font-bold text-gray-800 text-center">
+            🎉 Lucky Draw Event 🎉
+          </p>
+          <p className="text-lg tracking-wide text-gray-700 mt-3 leading-relaxed w-3/4 md:w-full mx-auto text-center">
+            Indore Municipal Corporation (IMC) is organizing a special Lucky
+            Draw Event to encourage timely payment of advance property tax and
+            water tax. Citizens who have paid their advance property tax and
+            water tax are eligible to participate in this exciting lucky draw
+            and stand a chance to win amazing prizes.
+          </p>
+        </div>
+
+        {/* Image */}
+        <div className="flex justify-center mt-4 md:mt-0">
+          <Image
+            src="/mayor.png"
+            alt="Lucky Draw Event"
+            width={350}
+            height={250}
+            className="rounded-lg shadow-md"
+          />
+        </div>
       </div>
 
       {/* price section  */}
-      <div className="overflow-x-auto">
-        <p className="text-2xl tracking-wider font-bold text-center text-[#212529]">
-          Prices
-        </p>
+      <div className=" mt-8 md:mt-0 md:p-8 bg-gray-50 mb-10">
+        <h2 className=" text-xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
+          🎉 Prizes for Lucky Draw Winners 
+        </h2>
 
-        {/* first  */}
-        <div>
-          <p className="text-lg tracking-wider text-center text-[#212529] w-full mt-2">
-            1<sup>st</sup>
-            first position winner will win a electric car
-          </p>
-         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {prizes.map((prize, index) => (
+            <div
+              key={index}
+              className="flex flex-col md:flex-row items-center bg-white p-6 rounded-xl shadow-lg"
+            >
+              {/* Description (Left Side) */}
+              <div className="md:w-1/2 text-center md:text-left">
+                <p className="text-xl font-semibold text-gray-700">
+                  {prize.emoji} {prize.position} Prize
+                </p>
+                <p className="text-lg text-gray-600 mt-2">
+                  <span className="font-bold">{prize.winners}</span> will win a{" "}
+                  <span className="text-blue-600 font-semibold">
+                    {prize.prize}
+                  </span>
+                  .
+                </p>
+              </div>
+
+              {/* Image (Right Side) */}
+              <div className="md:w-1/2 flex justify-center mt-4 md:mt-0">
+                <Image
+                  src={prize.image}
+                  alt={prize.prize}
+                  width={250}
+                  height={180}
+                  className="rounded-lg shadow-md"
+                />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Marquee Section */}
-      <div className="w-full bg-black text-white  overflow-hidden">
+      <div className="w-full bottom-0 fixed bg-black text-white  overflow-hidden">
         <div className="flex items-center">
           <span className="font-semibold text-lg px-4 w-[10%] h-full sm:block hidden bg-[#FF6500]">
             What’s New
