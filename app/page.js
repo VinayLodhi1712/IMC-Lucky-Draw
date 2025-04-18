@@ -1,6 +1,5 @@
-// import { FaTrophy } from "react-icons/fa";
 import Image from "next/image";
-
+import Link from "next/link";
 const prizes = [
   {
     position: "1st",
@@ -133,9 +132,9 @@ export default function Home() {
                   key={index}
                   className="text-sm md:text-base flex items-center m-2"
                 >
-                  <a href="/" className="text-white hover:underline">
+                  <Link href="/" className="text-white hover:underline">
                     <li>{item}</li>
-                  </a>
+                  </Link>
                 </span>
               ))}
             </div>
