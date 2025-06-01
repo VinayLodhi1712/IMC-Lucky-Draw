@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,32 +11,37 @@ import { Trophy, Award, Sparkles, Star, MapPin, Home } from "lucide-react";
 import { ClipLoader } from "react-spinners";
 
 // Dynamically import Confetti to avoid SSR issues
-const Confetti = dynamic(() => import('react-confetti'), { ssr: false });
+const Confetti = dynamic(() => import("react-confetti"), { ssr: false });
 
 export default function WinnersPage() {
   const [propertyWinners, setPropertyWinners] = useState([]);
   const [waterWinners, setWaterWinners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showConfetti, setShowConfetti] = useState(true);
-  const [windowSize, setWindowSize] = useState({ width: undefined, height: undefined });
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined,
+  });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const handleResize = () => {
         setWindowSize({ width: window.innerWidth, height: window.innerHeight });
       };
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
       handleResize(); // Set initial size
-      return () => window.removeEventListener('resize', handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
-
 
   useEffect(() => {
     const fetchPropertyWinners = async () => {
       try {
-        const response = await fetch("http://localhost:5000/getAllPropertyWinners");
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/getAllPropertyWinners`
+        );
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setPropertyWinners(data);
       } catch (error) {
@@ -46,8 +51,11 @@ export default function WinnersPage() {
 
     const fetchWaterWinners = async () => {
       try {
-        const response = await fetch("http://localhost:5000/getAllWaterWinners");
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/getAllWaterWinners`
+        );
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         setWaterWinners(data);
       } catch (error) {
@@ -67,17 +75,20 @@ export default function WinnersPage() {
   }, []);
 
   const getWinnersByPosition = (winners, position) => {
-    return winners.filter(winner => winner.POSITION === position);
+    return winners.filter((winner) => winner.POSITION === position);
   };
 
   const getZoneWinners = (winners) => {
-    return winners.filter(winner => winner.POSITION?.startsWith("Zone "));
+    return winners.filter((winner) => winner.POSITION?.startsWith("Zone "));
   };
-  
+
   // Helper function to extract zone number for sorting
   const getZoneNumberFromPosition = (positionString) => {
-    if (typeof positionString !== 'string' || !positionString.startsWith("Zone ")) {
-      return Infinity; 
+    if (
+      typeof positionString !== "string" ||
+      !positionString.startsWith("Zone ")
+    ) {
+      return Infinity;
     }
     const num = parseInt(positionString.split(" ")[1], 10);
     return isNaN(num) ? Infinity : num;
@@ -86,13 +97,16 @@ export default function WinnersPage() {
   const renderWinnerList = (winners, type) => {
     const zoneData = getZoneWinners(winners).reduce((acc, winner) => {
       const key = winner.POSITION;
-      if (!acc[key]) acc[key] = { winners: [], zoneNumber: getZoneNumberFromPosition(key) };
+      if (!acc[key])
+        acc[key] = { winners: [], zoneNumber: getZoneNumberFromPosition(key) };
       acc[key].winners.push(winner);
       return acc;
     }, {});
-  
-    const sortedZones = Object.entries(zoneData)
-      .sort(([, zoneAData], [, zoneBData]) => zoneAData.zoneNumber - zoneBData.zoneNumber);
+
+    const sortedZones = Object.entries(zoneData).sort(
+      ([, zoneAData], [, zoneBData]) =>
+        zoneAData.zoneNumber - zoneBData.zoneNumber
+    );
 
     const nameField = type === "property" ? "PROPERTY_OWNER_NAME" : "NAME";
 
@@ -106,25 +120,41 @@ export default function WinnersPage() {
               First Prize Winner
             </h2>
             {getWinnersByPosition(winners, "1st").map((winner, index) => (
-              <div key={index} className="bg-gradient-to-r from-yellow-100 to-yellow-50 p-6 rounded-lg shadow-lg border border-yellow-200 relative overflow-hidden">
+              <div
+                key={index}
+                className="bg-gradient-to-r from-yellow-100 to-yellow-50 p-6 rounded-lg shadow-lg border border-yellow-200 relative overflow-hidden"
+              >
                 <div className="absolute -right-6 -top-6 opacity-10">
                   <Trophy className="h-32 w-32 text-yellow-500" />
                 </div>
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="w-full md:w-1/3 flex justify-center">
                     <div className="relative w-48 h-48">
-                      <Image src="/car.png" alt="Car" layout="fill" objectFit="contain" className="drop-shadow-xl" />
+                      <Image
+                        src="/car.png"
+                        alt="Car"
+                        layout="fill"
+                        objectFit="contain"
+                        className="drop-shadow-xl"
+                      />
                     </div>
                   </div>
                   <div className="w-full md:w-2/3 space-y-3">
-                    <Badge className="bg-yellow-500 hover:bg-yellow-600 text-lg py-1 px-3">Grand Prize</Badge>
-                    <h3 className="text-xl md:text-2xl font-bold">{winner[nameField]}</h3>
+                    <Badge className="bg-yellow-500 hover:bg-yellow-600 text-lg py-1 px-3">
+                      Grand Prize
+                    </Badge>
+                    <h3 className="text-xl md:text-2xl font-bold">
+                      {winner[nameField]}
+                    </h3>
                     <div className="flex items-center text-gray-600">
                       <MapPin className="h-5 w-5 mr-2" />
-                      <span>Ward: {winner.WARD}, Zone: {winner.ZONE}</span>
+                      <span>
+                        Ward: {winner.WARD}, Zone: {winner.ZONE}
+                      </span>
                     </div>
                     <p className="italic text-gray-500">
-                      "Congratulations on winning a brand new car! Thank you for being a responsible citizen."
+                      "Congratulations on winning a brand new car! Thank you for
+                      being a responsible citizen."
                     </p>
                   </div>
                 </div>
@@ -142,15 +172,25 @@ export default function WinnersPage() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {getWinnersByPosition(winners, "2nd").map((winner, index) => (
-                <Card key={index} className="overflow-hidden bg-gray-50 border-gray-200 hover:shadow-md transition-shadow">
+                <Card
+                  key={index}
+                  className="overflow-hidden bg-gray-50 border-gray-200 hover:shadow-md transition-shadow"
+                >
                   <div className="p-1 bg-gradient-to-r from-gray-200 to-gray-300" />
                   <CardContent className="p-6 pt-5">
                     <div className="flex justify-center mb-4">
                       <div className="relative w-32 h-32">
-                        <Image src="/scooty.png" alt="Scooty" layout="fill" objectFit="contain" />
+                        <Image
+                          src="/scooty.png"
+                          alt="Scooty"
+                          layout="fill"
+                          objectFit="contain"
+                        />
                       </div>
                     </div>
-                    <h3 className="text-lg font-bold text-center mb-3">{winner[nameField]}</h3>
+                    <h3 className="text-lg font-bold text-center mb-3">
+                      {winner[nameField]}
+                    </h3>
                     <div className="flex items-center justify-center text-gray-600 text-sm">
                       <Home className="h-4 w-4 mr-1" />
                       <span>Ward: {winner.WARD}</span>
@@ -171,12 +211,24 @@ export default function WinnersPage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {getWinnersByPosition(winners, "3rd").map((winner, index) => (
-                <Card key={index} className="overflow-hidden bg-amber-50 border-amber-100 hover:shadow-md transition-shadow">
+                <Card
+                  key={index}
+                  className="overflow-hidden bg-amber-50 border-amber-100 hover:shadow-md transition-shadow"
+                >
                   <div className="h-24 relative">
-                    <Image src="/tv.png" alt="TV" layout="fill" objectFit="contain" className="p-2" />
+                    <Image
+                      src="/tv.png"
+                      alt="TV"
+                      layout="fill"
+                      objectFit="contain"
+                      className="p-2"
+                    />
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-medium text-center truncate" title={winner[nameField]}>
+                    <h3
+                      className="font-medium text-center truncate"
+                      title={winner[nameField]}
+                    >
                       {winner[nameField]}
                     </h3>
                     <div className="flex items-center justify-center text-gray-600 text-xs mt-1">
@@ -205,20 +257,31 @@ export default function WinnersPage() {
                     <div className="p-4 bg-blue-50 flex justify-between items-center border-b">
                       <h3 className="font-bold text-lg">{position}</h3>
                       <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                        {data.winners.length} Winner{data.winners.length === 1 ? "" : "s"}
+                        {data.winners.length} Winner
+                        {data.winners.length === 1 ? "" : "s"}
                       </Badge>
                     </div>
                     <CardContent className="p-0">
                       <div className="p-3 grid grid-cols-5 items-center">
                         <div className="col-span-1">
                           <div className="relative w-full aspect-square">
-                            <Image src="/mixer.jpeg" alt="Mixer Grinder" layout="fill" objectFit="contain" className="p-1" />
+                            <Image
+                              src="/mixer.jpeg"
+                              alt="Mixer Grinder"
+                              layout="fill"
+                              objectFit="contain"
+                              className="p-1"
+                            />
                           </div>
                         </div>
                         <div className="col-span-4 pl-3">
                           <ul className="space-y-2">
                             {data.winners.slice(0, 5).map((winner, idx) => (
-                              <li key={idx} className="text-sm truncate" title={winner[nameField]}>
+                              <li
+                                key={idx}
+                                className="text-sm truncate"
+                                title={winner[nameField]}
+                              >
                                 {winner[nameField]}
                               </li>
                             ))}
@@ -246,11 +309,17 @@ export default function WinnersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 pt-24 pb-16"> {/* pt-24 for top padding */}
+    <div className="container mx-auto px-4 pt-24 pb-16">
+      {" "}
+      {/* pt-24 for top padding */}
       {showConfetti && windowSize.width && windowSize.height && (
-         <Confetti width={windowSize.width} height={windowSize.height} recycle={true} numberOfPieces={200} />
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+          recycle={true}
+          numberOfPieces={200}
+        />
       )}
-      
       <div className="flex flex-col items-center mb-10">
         <div className="relative w-full max-w-4xl">
           <div className="absolute -top-16 right-4 w-32 h-32 md:w-40 md:h-40 z-10">
@@ -277,17 +346,26 @@ export default function WinnersPage() {
           </div>
         </div>
       </div>
-
       <Tabs defaultValue="property" className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
-          <TabsTrigger value="property" className="text-lg data-[state=active]:bg-blue-500 data-[state=active]:text-white">Property Tax Winners</TabsTrigger>
-          <TabsTrigger value="water" className="text-lg data-[state=active]:bg-green-500 data-[state=active]:text-white">Water Tax Winners</TabsTrigger>
+          <TabsTrigger
+            value="property"
+            className="text-lg data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+          >
+            Property Tax Winners
+          </TabsTrigger>
+          <TabsTrigger
+            value="water"
+            className="text-lg data-[state=active]:bg-green-500 data-[state=active]:text-white"
+          >
+            Water Tax Winners
+          </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="property">
           {renderWinnerList(propertyWinners, "property")}
         </TabsContent>
-        
+
         <TabsContent value="water">
           {renderWinnerList(waterWinners, "water")}
         </TabsContent>

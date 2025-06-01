@@ -1,5 +1,5 @@
 "use client";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -41,28 +41,28 @@ function RandomWinnerPage() {
 
   useEffect(() => {
     function updateDimensions() {
-      setConfettiProps(prev => ({
+      setConfettiProps((prev) => ({
         ...prev,
         width: window.innerWidth,
-        height: document.documentElement.scrollHeight
+        height: document.documentElement.scrollHeight,
       }));
     }
 
-    window.addEventListener('resize', updateDimensions);
-    window.addEventListener('scroll', updateDimensions);
-    
+    window.addEventListener("resize", updateDimensions);
+    window.addEventListener("scroll", updateDimensions);
+
     // Initial call to set dimensions
     updateDimensions();
-    
+
     return () => {
-      window.removeEventListener('resize', updateDimensions);
-      window.removeEventListener('scroll', updateDimensions);
+      window.removeEventListener("resize", updateDimensions);
+      window.removeEventListener("scroll", updateDimensions);
     };
   }, []);
 
   const triggerConfetti = () => {
     // Increment the key to force a re-render of the Confetti component
-    setConfettiKey(prev => prev + 1);
+    setConfettiKey((prev) => prev + 1);
     setShowConfetti(true);
   };
 
@@ -72,7 +72,7 @@ function RandomWinnerPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/property_random-winner_${position}`
+        `${process.env.NEXT_PUBLIC_API_URL}/property_random-winner_${position}`
       );
       const data = await response.json();
 
@@ -102,7 +102,7 @@ function RandomWinnerPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/property_random-zone-winners/${zone}`
+        `${process.env.NEXT_PUBLIC_API_URL}/property_random-zone-winners/${zone}`
       );
       const data = await response.json();
 
@@ -114,7 +114,7 @@ function RandomWinnerPage() {
 
       setWinners(data.winners || []);
       toast.success(`Zone ${zone} winners selected!`);
-      triggerConfetti();  
+      triggerConfetti();
     } catch (err) {
       setError(err.message);
       toast.error(`${err.message}`);
@@ -126,7 +126,9 @@ function RandomWinnerPage() {
   const downloadExcel = async () => {
     setLoadingExcel(true);
     try {
-      const response = await fetch("http://localhost:5000/GenerateExcel");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/GenerateExcel`
+      );
 
       if (!response.ok) {
         throw new Error("Failed to generate Excel");
@@ -182,7 +184,7 @@ function RandomWinnerPage() {
       <Toaster position="top-right" reverseOrder={false} />
       {showConfetti && (
         <ReactConfetti
-          key={confettiKey}  // Add key to force re-render
+          key={confettiKey} // Add key to force re-render
           width={confettiProps.width}
           height={confettiProps.height}
           recycle={false}
@@ -193,7 +195,7 @@ function RandomWinnerPage() {
             x: 0,
             y: 0,
             w: confettiProps.width,
-            h: 0
+            h: 0,
           }}
           onConfettiComplete={(confetti) => {
             if (confetti.totalPieces === 0) {
@@ -202,7 +204,6 @@ function RandomWinnerPage() {
           }}
         />
       )}
-
 
       <div className="w-full max-w-6xl mt-20">
         <h1 className="text-3xl font-bold text-center my-6">

@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
-
 import {
   Card,
   CardHeader,
@@ -16,6 +15,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -32,11 +32,14 @@ function Login() {
     }
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ Email: email, Password: password }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}}/Login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ Email: email, Password: password }),
+        }
+      );
 
       const result = await response.json();
 
@@ -66,7 +69,10 @@ function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 pt-20">
+    <div
+      className="flex items-center justify-center h-screen bg-gradient-to-br from-gray-50
+     to-gray-100 dark:from-gray-900 dark:to-gray-800 p-3 sm:pt-20"
+    >
       <Toaster
         position="top-right"
         reverseOrder={false}
@@ -88,6 +94,12 @@ function Login() {
             <div className="flex justify-center mb-2">
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <LogIn className="h-6 w-6 text-primary" />
+                <Image
+                  src="/imclogo.png"
+                  alt="IMC Logo"
+                  width={200}
+                  height={100}
+                />
               </div>
             </div>
             <CardTitle className="text-2xl font-bold text-center">

@@ -73,7 +73,7 @@ function WaterWinnersPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/water_random-winner_${position}`
+        `${process.env.NEXT_PUBLIC_API_URL}/water_random-winner_${position}`
       );
       const data = await response.json();
 
@@ -105,7 +105,7 @@ function WaterWinnersPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/water_random-zone-winners/${zone}`
+        `${process.env.NEXT_PUBLIC_API_URL}/water_random-zone-winners/${zone}`
       );
       const data = await response.json();
 
@@ -131,7 +131,7 @@ function WaterWinnersPage() {
   const downloadExcel = async () => {
     setLoadingExcel(true);
     try {
-      const response = await fetch("http://localhost:5000/GenerateExcelWater");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/GenerateExcelWater`);
 
       if (!response.ok) {
         throw new Error("Failed to generate Excel");

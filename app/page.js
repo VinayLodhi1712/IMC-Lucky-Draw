@@ -30,6 +30,7 @@ const prizes = [
     image: "/mixer.jpeg",
   },
 ];
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen font-[family-name:var(--font-geist-sans)] relative">
@@ -74,7 +75,7 @@ export default function Home() {
       {/* price section  */}
       <div className=" mt-8 md:mt-0 md:p-8 bg-gray-50 mb-10">
         <h2 className=" text-xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
-          🎉 Prizes for Lucky Draw Winners 
+          🎉 Prizes for Lucky Draw Winners
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
