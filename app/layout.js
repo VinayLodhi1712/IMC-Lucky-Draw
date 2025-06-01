@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/app/_components/Navbar";
 import { AuthProvider } from "./_context/userAuth";
+ import dynamic from 'next/dynamic';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
