@@ -17,7 +17,7 @@ import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-import { FaHome, FaBuilding, FaHandHoldingWater } from "react-icons/fa";
+import { FaHome, FaBuilding, FaHandHoldingWater, FaAward } from "react-icons/fa";
 import { HiOutlineLogout } from "react-icons/hi";
 import { CiLogin } from "react-icons/ci";
 
@@ -44,6 +44,11 @@ const Navbar = () => {
       name: "WATER",
       href: "/water",
       icon: <FaHandHoldingWater className="text-xl" />,
+    },
+    {
+      name: "Winners",
+      href: "/winners",
+      icon: <FaAward className="text-xl" />,
     },
   ];
 

@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 require("./dbconnect2.js");
 const mongoose = require("mongoose");
@@ -5,12 +7,10 @@ const app = express();
 const cors = require("cors");
 const ExcelJS = require("exceljs"); //excel
 const JWT = require("jsonwebtoken");
-const dotenv = require("dotenv");
 const checkToken = require("./middlewares/isLoggedin.js");
 
 app.use(cors());
 app.use(express.json());
-dotenv.config();
 // schemas to get winners
 
 const PropertyAdvance = mongoose.model(
@@ -535,7 +535,6 @@ app.get("/GenerateExcelWater", async (req, resp) => {
 app.post("/Login", async (req, resp) => {
   try {
     if (req.body.Password && req.body.Email) {
-      console.log("JWT Secret:", process.env.SECRET);
 
       let user = await Author.findOne(req.body);
       let token;
@@ -574,4 +573,70 @@ app.get("/userAuth", checkToken, async (req, resp) => {
 
 app.listen(5000, () => {
   console.log("server running on port 5000");
+});
+
+// Get all property winners, sorted by position
+app.get("/getAllPropertyWinners", async (req, resp) => {
+  try {
+    const propertyWinnerDocs = await Winners.find({}).lean(); // .lean() for plain JS objects
+
+    // Custom sort logic for positions
+    const customSort = (a, b) => {
+      const posA = a.POSITION;
+      const posB = b.POSITION;
+
+      const getOrder = (pos) => {
+        if (!pos) return 999; // Handle undefined or null positions
+        if (pos === "1st") return 1;
+        if (pos === "2nd") return 2;
+        if (pos === "3rd") return 3;
+        if (pos.startsWith("Zone ")) {
+          const zoneNum = parseInt(pos.split(" ")[1], 10);
+          return isNaN(zoneNum) ? 900 : 100 + zoneNum; // Zone 1 -> 101, Zone 2 -> 102
+        }
+        return 999; // Other/unknown
+      };
+      return getOrder(posA) - getOrder(posB);
+    };
+
+    propertyWinnerDocs.sort(customSort);
+
+    resp.status(200).json(propertyWinnerDocs);
+  } catch (error) {
+    console.error("Error fetching property winners:", error);
+    resp.status(500).json({ error: "Internal Server Error", message: error.message });
+  }
+});
+
+// Get all water winners, sorted by position
+app.get("/getAllWaterWinners", async (req, resp) => {
+  try {
+    const waterWinnerDocs = await WaterWinners.find({}).lean();
+
+    // Custom sort logic for positions (same as property)
+    const customSort = (a, b) => {
+      const posA = a.POSITION;
+      const posB = b.POSITION;
+
+      const getOrder = (pos) => {
+        if (!pos) return 999;
+        if (pos === "1st") return 1;
+        if (pos === "2nd") return 2;
+        if (pos === "3rd") return 3;
+        if (pos.startsWith("Zone ")) {
+          const zoneNum = parseInt(pos.split(" ")[1], 10);
+          return isNaN(zoneNum) ? 900 : 100 + zoneNum;
+        }
+        return 999;
+      };
+      return getOrder(posA) - getOrder(posB);
+    };
+    
+    waterWinnerDocs.sort(customSort);
+
+    resp.status(200).json(waterWinnerDocs);
+  } catch (error) {
+    console.error("Error fetching water winners:", error);
+    resp.status(500).json({ error: "Internal Server Error", message: error.message });
+  }
 });
