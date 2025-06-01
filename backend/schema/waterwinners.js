@@ -10,7 +10,13 @@ const winnerSchema = new mongoose.Schema(
     ZONE: Number,
     ADDRESS: String,
     SR_NO: Number,
-    POSITION: String,
+    POSITION: {
+      type: String,
+      index: true // <<< INDEX ADDED HERE: Creates an index on the POSITION field.
+                  // This will make queries filtering by POSITION (e.g., finding if a "1st" place winner already exists)
+                  // significantly faster, especially as the number of winners grows.
+                  // MongoDB will maintain this index to quickly locate documents based on their POSITION value.
+    },
   },
   {
     collection: "WaterWinners",

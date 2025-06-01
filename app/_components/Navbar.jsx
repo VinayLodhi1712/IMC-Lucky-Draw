@@ -46,7 +46,7 @@ const Navbar = () => {
       icon: <FaHandHoldingWater className="text-xl" />,
     },
     {
-      name: "Winners",
+      name: "WINNERS",
       href: "/winners",
       icon: <FaAward className="text-xl" />,
     },
