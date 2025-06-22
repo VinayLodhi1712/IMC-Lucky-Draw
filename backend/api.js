@@ -640,3 +640,91 @@ app.get("/getAllWaterWinners", async (req, resp) => {
     resp.status(500).json({ error: "Internal Server Error", message: error.message });
   }
 });
+
+// Check if property winners exist for specific position
+app.get("/checkPropertyWinners/:position", async (req, resp) => {
+  try {
+    const { position } = req.params;
+    
+    let positionName;
+    if (position === "1") positionName = "1st";
+    else if (position === "2") positionName = "2nd";
+    else if (position === "3") positionName = "3rd";
+    else {
+      return resp.status(400).json({ hasWinners: false, error: "Invalid position" });
+    }
+
+    const existingWinner = await Winners.findOne({ POSITION: positionName });
+    
+    resp.json({ 
+      hasWinners: !!existingWinner,
+      position: positionName,
+      message: existingWinner ? `${positionName} position winner already exists` : `${positionName} position available for draw`
+    });
+  } catch (error) {
+    console.error("Error checking property winners:", error);
+    resp.status(500).json({ hasWinners: false, error: "Internal Server Error" });
+  }
+});
+
+// Check if water winners exist for specific position
+app.get("/checkWaterWinners/:position", async (req, resp) => {
+  try {
+    const { position } = req.params;
+    
+    let positionName;
+    if (position === "1") positionName = "1st";
+    else if (position === "2") positionName = "2nd";
+    else if (position === "3") positionName = "3rd";
+    else {
+      return resp.status(400).json({ hasWinners: false, error: "Invalid position" });
+    }
+
+    const existingWinner = await WaterWinners.findOne({ POSITION: positionName });
+    
+    resp.json({ 
+      hasWinners: !!existingWinner,
+      position: positionName,
+      message: existingWinner ? `${positionName} position winner already exists` : `${positionName} position available for draw`
+    });
+  } catch (error) {
+    console.error("Error checking water winners:", error);
+    resp.status(500).json({ hasWinners: false, error: "Internal Server Error" });
+  }
+});
+
+// Check if property zone winners exist for specific zone
+app.get("/checkPropertyZoneWinners/:zoneNumber", async (req, resp) => {
+  try {
+    const { zoneNumber } = req.params;
+    
+    const existingWinner = await Winners.findOne({ POSITION: `Zone ${zoneNumber}` });
+    
+    resp.json({ 
+      hasWinners: !!existingWinner,
+      zone: zoneNumber,
+      message: existingWinner ? `Zone ${zoneNumber} winners already exist` : `Zone ${zoneNumber} available for draw`
+    });
+  } catch (error) {
+    console.error("Error checking property zone winners:", error);
+    resp.status(500).json({ hasWinners: false, error: "Internal Server Error" });
+  }
+});
+
+// Check if water zone winners exist for specific zone
+app.get("/checkWaterZoneWinners/:zoneNumber", async (req, resp) => {
+  try {
+    const { zoneNumber } = req.params;
+    
+    const existingWinner = await WaterWinners.findOne({ POSITION: `Zone ${zoneNumber}` });
+    
+    resp.json({ 
+      hasWinners: !!existingWinner,
+      zone: zoneNumber,
+      message: existingWinner ? `Zone ${zoneNumber} winners already exist` : `Zone ${zoneNumber} available for draw`
+    });
+  } catch (error) {
+    console.error("Error checking water zone winners:", error);
+    resp.status(500).json({ hasWinners: false, error: "Internal Server Error" });
+  }
+});

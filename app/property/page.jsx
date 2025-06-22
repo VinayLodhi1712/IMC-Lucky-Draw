@@ -1,459 +1,203 @@
-"use client";
-import { useState,useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import toast, { Toaster } from "react-hot-toast";
-import { Loader2 } from "lucide-react";
-import CheckLogin from "../_privateRoutes/checkLogin";
-import dynamic from "next/dynamic";
+"use client"
+import { useState, useEffect } from "react"
+import toast, { Toaster } from "react-hot-toast"
+import dynamic from "next/dynamic"
+import { AnimatePresence } from "framer-motion"
+import CheckLogin from "../_privateRoutes/checkLogin"
+import { DashboardView } from "../_components/winners/DashboardView"
+import { WinnerRevealView } from "../_components/winners/WinnerReveal"
+import { useWindowSize } from "@/app/hooks/use-window-size"
 
-const ReactConfetti = dynamic(() => import("react-confetti"), {
-  ssr: false,
-});
+const ReactConfetti = dynamic(() => import("react-confetti"), { ssr: false })
 
-function RandomWinnerPage() {
-  const [winners, setWinners] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingExcel, setLoadingExcel] = useState(false);
-  const [error, setError] = useState("");
-  const [zoneError, setZoneError] = useState("");
-  const [activeTab, setActiveTab] = useState("first");
-  const [zone, setZone] = useState("");
+const prizeData = [
+  {
+    id: "first",
+    title: "Grand Prize",
+    prizeName: "Electric Vehicle",
+    winnerCount: "1 Winner",
+    image: "/car.png",
+    color: "bg-gradient-to-br from-yellow-400 to-amber-500",
+    apiSlug: "1",
+  },
+  {
+    id: "second",
+    title: "Second Prize",
+    prizeName: "Electric Scooter",
+    winnerCount: "3 Winners",
+    image: "/scooty.png",
+    color: "bg-gradient-to-br from-slate-400 to-slate-500",
+    apiSlug: "2",
+  },
+  {
+    id: "third",
+    title: "Third Prize",
+    prizeName: "Smart LED Television",
+    winnerCount: "5 Winners",
+    image: "/tv.png",
+    color: "bg-gradient-to-br from-orange-500 to-red-500",
+    apiSlug: "3",
+  },
+  {
+    id: "zone",
+    title: "Zonal Prize",
+    prizeName: "Premium Mixer Grinder",
+    winnerCount: "5 Per Zone",
+    image: "/mixer.jpeg",
+    color: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    apiSlug: "zone",
+  },
+]
 
-  //confetti state
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [confettiKey, setConfettiKey] = useState(0);
-  const [confettiProps, setConfettiProps] = useState({
-    width: 0,
-    height: 0,
-    numberOfPieces: 500,
-    recycle: false,
-    gravity: 0.3,
-  });
+function PropertyWinnersPage() {
+  const [currentView, setCurrentView] = useState("dashboard")
+  const [selectedPrize, setSelectedPrize] = useState(null)
+  const [winners, setWinners] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [loadingExcel, setLoadingExcel] = useState(false)
+  const [error, setError] = useState("")
+  const [showConfetti, setShowConfetti] = useState(false)
+  const { width, height } = useWindowSize()
 
   useEffect(() => {
-    function updateDimensions() {
-      setConfettiProps(prev => ({
-        ...prev,
-        width: window.innerWidth,
-        height: document.documentElement.scrollHeight
-      }));
+    if (showConfetti) {
+      const timer = setTimeout(() => setShowConfetti(false), 10000)
+      return () => clearTimeout(timer)
     }
-
-    window.addEventListener('resize', updateDimensions);
-    window.addEventListener('scroll', updateDimensions);
-    
-    // Initial call to set dimensions
-    updateDimensions();
-    
-    return () => {
-      window.removeEventListener('resize', updateDimensions);
-      window.removeEventListener('scroll', updateDimensions);
-    };
-  }, []);
+  }, [showConfetti])
 
   const triggerConfetti = () => {
-    // Increment the key to force a re-render of the Confetti component
-    setConfettiKey(prev => prev + 1);
-    setShowConfetti(true);
-  };
+    setShowConfetti(true)
+  }
 
-  const fetchWinner = async (position) => {
-    setLoading(true);
-    setError("");
+  const handleSelectPrize = (prize) => {
+    setSelectedPrize(prize)
+    setCurrentView(prize.id)
+  }
 
-    try {
-      const response = await fetch(
-        `http://localhost:5000/property_random-winner_${position}`
-      );
-      const data = await response.json();
+  const handleGoBack = () => {
+    setCurrentView("dashboard")
+    setWinners([])
+    setError("")
+    setSelectedPrize(null)
+  }
 
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch winner(s)");
-      }
+  const handleRevealWinners = async (prize) => {
+    setLoading(true)
+    setError("")
+    setWinners([])
 
-      setWinners(Array.isArray(data) ? data : [data]);
-      toast.success(`${position} place winner(s) selected!`);
-      triggerConfetti();
-    } catch (err) {
-      setError(err.message);
-      toast.error(`${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchZoneWinners = async () => {
-    if (!zone) {
-      toast.error("Please select a zone!");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
+    const url =
+      prize.apiSlug === "zone"
+        ? `http://localhost:5000/property_random-zone-winners/${prize.zone}`
+        : `http://localhost:5000/property_random-winner_${prize.apiSlug}`
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/property_random-zone-winners/${zone}`
-      );
-      const data = await response.json();
+      await new Promise((resolve) => setTimeout(resolve, 3000))
 
-      if (!response.ok) {
-        throw new Error(
-          data.message || `Failed to fetch winners for Zone ${zone}`
-        );
-      }
+      const response = await fetch(url)
+      const data = await response.json()
 
-      setWinners(data.winners || []);
-      toast.success(`Zone ${zone} winners selected!`);
-      triggerConfetti();  
+      if (!response.ok) throw new Error(data.message || "Failed to fetch winners")
+
+      const results = Array.isArray(data) ? data : data.winners || [data]
+      if (results.length === 0) throw new Error("No eligible winners found")
+
+      setWinners(results)
+      toast.success(`${prize.title} winners selected successfully!`)
+      triggerConfetti()
     } catch (err) {
-      setError(err.message);
-      toast.error(`${err.message}`);
+      setError(err.message)
+      toast.error(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const downloadExcel = async () => {
-    setLoadingExcel(true);
+    setLoadingExcel(true)
     try {
-      const response = await fetch("http://localhost:5000/GenerateExcel");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/GenerateExcel`)
+      if (!response.ok) throw new Error("Failed to generate report")
 
-      if (!response.ok) {
-        throw new Error("Failed to generate Excel");
-      }
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = "property-winners-report.xlsx"
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "property-winners.xlsx";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      toast.success("Excel file downloaded successfully!");
+      toast.success("Report downloaded successfully!")
     } catch (err) {
-      console.error("Excel Download Error:", err);
-      toast.error("Failed to download Excel.");
+      toast.error("Failed to download report")
     } finally {
-      setLoadingExcel(false);
+      setLoadingExcel(false)
     }
-  };
+  }
 
-  const clearWinners = () => {
-    setWinners([]);
-    toast.success("Winners list cleared!");
-  };
-
-  // Handle tab changes and fetch data accordingly
-  const handleTabChange = (value) => {
-    setActiveTab(value);
-    setWinners([]);
-  };
-
-  const handleChange = (e) => {
-    const value = Number(e.target.value);
-
-    if (value < 1 || value > 19) {
-      setZoneError("Zone number must be between 1 and 19");
-    } else {
-      setZoneError("");
-    }
-
-    setZone(value);
-  };
-
-  // Function to safely display data or fallback to "-"
-  const safeDisplay = (value) => {
-    return value !== undefined && value !== null && value !== "" ? value : "-";
-  };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100 p-4 ">
-      <Toaster position="top-right" reverseOrder={false} />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
+            color: "#fff",
+            borderRadius: "12px",
+            fontSize: "15px",
+            fontWeight: "500",
+            padding: "16px 20px",
+            minWidth: "320px",
+            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
+          },
+          success: {
+            style: {
+              background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+            },
+          },
+          error: {
+            style: {
+              background: "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)",
+            },
+          },
+        }}
+      />
+
       {showConfetti && (
-        <ReactConfetti
-          key={confettiKey}  // Add key to force re-render
-          width={confettiProps.width}
-          height={confettiProps.height}
-          recycle={false}
-          numberOfPieces={confettiProps.numberOfPieces}
-          gravity={confettiProps.gravity}
-          initialVelocityY={10}
-          confettiSource={{
-            x: 0,
-            y: 0,
-            w: confettiProps.width,
-            h: 0
-          }}
-          onConfettiComplete={(confetti) => {
-            if (confetti.totalPieces === 0) {
-              setShowConfetti(false);
-            }
-          }}
-        />
+        <ReactConfetti width={width} height={height} numberOfPieces={200} recycle={false} gravity={0.1} />
       )}
 
-
-      <div className="w-full max-w-6xl mt-20">
-        <h1 className="text-3xl font-bold text-center my-6">
-          Property Winners Management
-        </h1>
-
-        {/* Top Actions Row */}
-        <div className="flex justify-between items-center mb-6">
-          <Button
-            onClick={downloadExcel}
-            disabled={loadingExcel}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            {loadingExcel ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              "📥 Download Excel"
-            )}
-          </Button>
-
-          <Button
-            onClick={clearWinners}
-            disabled={winners.length === 0}
-            className="bg-red-600 hover:bg-red-700"
-          >
-            🗑️ Clear List
-          </Button>
-        </div>
-
-        {/* Tabs Interface */}
-        <Tabs
-          defaultValue="first"
-          value={activeTab}
-          onValueChange={handleTabChange}
-        >
-          <div className="mt-25 sm:mt-0 flex  flex-col justify-center items-center sm:items-start">
-            {" "}
-            <TabsList className="flex flex-col sm:flex-row gap-5 mb-5">
-              <TabsTrigger value="first" className="text-lg p-5 cursor-pointer">
-                🏆 First Place
-              </TabsTrigger>
-              <TabsTrigger
-                value="second"
-                className="text-lg p-5 cursor-pointer"
-              >
-                🥈 Second Place
-              </TabsTrigger>
-              <TabsTrigger value="third" className="text-lg p-5 cursor-pointer">
-                🥉 Third Place
-              </TabsTrigger>
-              <TabsTrigger value="zone" className="text-lg p-5 cursor-pointer">
-                🌎 Zone Winners
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent
-              value="first"
-              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
-            >
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold mb-4">
-                  First Place Winners
-                </h2>
-                <Button
-                  onClick={() => fetchWinner(1)}
-                  disabled={loading}
-                  className="mb-6 bg-blue-600 hover:bg-blue-700"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Selecting...
-                    </>
-                  ) : (
-                    "Select 1st Place Winner"
-                  )}
-                </Button>
-                {renderWinnersTable("1st Place")}
-              </div>
-            </TabsContent>
-            <TabsContent
-              value="second"
-              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
-            >
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold mb-4">
-                  Second Place Winners
-                </h2>
-                <Button
-                  onClick={() => fetchWinner(2)}
-                  disabled={loading}
-                  className="mb-6 bg-yellow-600 hover:bg-yellow-700"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Selecting...
-                    </>
-                  ) : (
-                    "Select 2nd Place Winners"
-                  )}
-                </Button>
-                {renderWinnersTable("2nd Place")}
-              </div>
-            </TabsContent>
-            <TabsContent
-              value="third"
-              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
-            >
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold mb-4">
-                  Third Place Winners
-                </h2>
-                <Button
-                  onClick={() => fetchWinner(3)}
-                  disabled={loading}
-                  className="mb-6 bg-orange-600 hover:bg-orange-700"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Selecting...
-                    </>
-                  ) : (
-                    "Select 3rd Place Winners"
-                  )}
-                </Button>
-                {renderWinnersTable("3rd Place")}
-              </div>
-            </TabsContent>
-            <TabsContent
-              value="zone"
-              className="sm:mt-0 md:mt-10 lg:mt-10 mt-[5rem] w-full"
-            >
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold mb-4">Zone Winners</h2>
-                <div className="flex gap-4 mb-6">
-                  <div className="flex flex-col gap-1 w-full max-w-xs">
-                    <input
-                      type="number"
-                      placeholder="Enter Zone Number"
-                      className="border rounded-md px-4 py-2 w-full"
-                      value={zone}
-                      onChange={handleChange}
-                    />
-
-                    {zoneError && (
-                      <p className="text-red-500 text-sm">{zoneError}</p>
-                    )}
-                  </div>
-
-                  <Button
-                    onClick={() => !zoneError && fetchZoneWinners()}
-                    disabled={loading || !!zoneError}
-                    className="bg-purple-600 hover:bg-purple-700"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Selecting...
-                      </>
-                    ) : (
-                      "Select Zone Winners"
-                    )}
-                  </Button>
-                </div>
-                {renderWinnersTable(`Zone ${zone}`)}
-              </div>
-            </TabsContent>
-          </div>
-        </Tabs>
-
-        {/* Error Message */}
-        {error && (
-          <div className="text-red-500 text-center mt-4 p-4 bg-red-50 rounded-md border border-red-200">
-            {error}
-          </div>
+      <AnimatePresence mode="wait">
+        {currentView === "dashboard" ? (
+          <DashboardView
+            key="dashboard"
+            title="Property Tax Lucky Draw Portal"
+            subtitle="Select a prize category to initiate the automated lucky draw for eligible property taxpayers"
+            prizes={prizeData}
+            onSelectPrize={handleSelectPrize}
+            onDownload={downloadExcel}
+            loadingExcel={loadingExcel}
+          />
+        ) : (
+          <WinnerRevealView
+            key="reveal"
+            prize={selectedPrize}
+            onBack={handleGoBack}
+            onReveal={handleRevealWinners}
+            winners={winners}
+            loading={loading}
+            error={error}
+          />
         )}
-      </div>
+      </AnimatePresence>
     </div>
-  );
-
-  // Helper function to render winners table
-  function renderWinnersTable(position) {
-    if (winners.length === 0) {
-      return (
-        <div className="text-gray-500 italic text-center p-8 bg-gray-50 rounded-lg border border-gray-200">
-          <p className="text-gray-500">No winners selected yet.</p>
-          <p className="text-sm mt-2">
-            Use the button above to select winners.
-          </p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="mt-4">
-        <h3 className="text-lg font-semibold text-center mb-4">
-          🎉 {position} Winner(s)
-        </h3>
-
-        <div className="rounded-md border shadow-sm overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-100">
-                <TableHead className="font-bold">SR No</TableHead>
-                <TableHead className="font-bold">Position</TableHead>
-                <TableHead className="font-bold">Owner Name</TableHead>
-                <TableHead className="font-bold">Partner</TableHead>
-                <TableHead className="font-bold">Ward</TableHead>
-                <TableHead className="font-bold">Zone</TableHead>
-                <TableHead className="font-bold">Year</TableHead>
-                <TableHead className="font-bold">Tax Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {winners.map((winner, index) => (
-                <TableRow
-                  key={index}
-                  className={index % 2 === 0 ? "bg-white" : "bg-slate-50"}
-                >
-                  <TableCell className="font-medium">
-                    {safeDisplay(winner.SR_NO) || index + 1}
-                  </TableCell>
-                  <TableCell>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {safeDisplay(winner.POSITION)}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {safeDisplay(winner.PROPERTY_OWNER_NAME)}
-                  </TableCell>
-                  <TableCell>{safeDisplay(winner.PARTNER)}</TableCell>
-                  <TableCell>{safeDisplay(winner.WARD)}</TableCell>
-                  <TableCell>{safeDisplay(winner.ZONE)}</TableCell>
-                  <TableCell>{safeDisplay(winner.ASSMENTYEAR)}</TableCell>
-                  <TableCell>
-                    {winner.TAX_AMT
-                      ? `₹${parseFloat(winner.TAX_AMT).toLocaleString("en-IN")}`
-                      : "-"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    );
-  }
+  )
 }
 
-export default CheckLogin(RandomWinnerPage);
+export default CheckLogin(PropertyWinnersPage)

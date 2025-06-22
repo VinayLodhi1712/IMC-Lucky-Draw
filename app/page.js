@@ -1,36 +1,42 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
-const prizes = [
-  {
-    position: "1st",
-    emoji: "🏆",
-    winners: "1 Winner",
-    prize: "Electric Car",
-    image: "/car.png",
-  },
-  {
-    position: "2nd",
-    emoji: "🥈",
-    winners: "3 Winners",
-    prize: "Electric Scooty",
-    image: "/scooty.png",
-  },
-  {
-    position: "3rd",
-    emoji: "🥉",
-    winners: "5 Winners",
-    prize: "LCD TV",
-    image: "/tv.png",
-  },
-  {
-    position: "4th",
-    emoji: "🎁",
-    winners: "5 Winners from each zone",
-    prize: "Mixer Grinder",
-    image: "/mixer.jpeg",
-  },
-];
+import { useLanguage } from "./_context/uselanguage";
+
 export default function Home() {
+  const { t } = useLanguage();
+
+  const prizes = [
+    {
+      position: t("firstPrize"),
+      emoji: "🏆",
+      winners: `1 ${t("winner")}`,
+      prize: t("electricCar"),
+      image: "/car.png",
+    },
+    {
+      position: t("secondPrize"),
+      emoji: "🥈",
+      winners: `3 ${t("winners")}`,
+      prize: t("electricScooty"),
+      image: "/scooty.png",
+    },
+    {
+      position: t("thirdPrize"),
+      emoji: "🥉",
+      winners: `5 ${t("winners")}`,
+      prize: t("lcdTv"),
+      image: "/tv.png",
+    },
+    {
+      position: t("fourthPrize"),
+      emoji: "🎁",
+      winners: `5 ${t("winnersFromEachZone")}`,
+      prize: t("mixerGrinder"),
+      image: "/mixer.jpeg",
+    },
+  ];
+
   return (
     <div className="flex flex-col min-h-screen font-[family-name:var(--font-geist-sans)] relative">
       {/* Background Video */}
@@ -48,14 +54,10 @@ export default function Home() {
         {/* Left Side - Text */}
         <div className="md:w-1/2 text-center md:text-left">
           <p className="text-xl sm:text-3xl tracking-wider font-bold text-gray-800 text-center">
-            🎉 Lucky Draw Event 🎉
+            {t("luckyDrawEvent")}
           </p>
           <p className="text-lg tracking-wide text-gray-700 mt-3 leading-relaxed w-3/4 md:w-full mx-auto text-center">
-            Indore Municipal Corporation (IMC) is organizing a special Lucky
-            Draw Event to encourage timely payment of advance property tax and
-            water tax. Citizens who have paid their advance property tax and
-            water tax are eligible to participate in this exciting lucky draw
-            and stand a chance to win amazing prizes.
+            {t("eventDescription")}
           </p>
         </div>
 
@@ -72,9 +74,9 @@ export default function Home() {
       </div>
 
       {/* price section  */}
-      <div className=" mt-8 md:mt-0 md:p-8 bg-gray-50 mb-10">
-        <h2 className=" text-xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
-          🎉 Prizes for Lucky Draw Winners 
+      <div className="mt-8 md:mt-0 md:p-8 bg-gray-50 mb-10">
+        <h2 className="text-xl sm:text-3xl font-bold text-center text-gray-800 mb-8">
+          {t("prizesForWinners")}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -86,10 +88,10 @@ export default function Home() {
               {/* Description (Left Side) */}
               <div className="md:w-1/2 text-center md:text-left">
                 <p className="text-xl font-semibold text-gray-700">
-                  {prize.emoji} {prize.position} Prize
+                  {prize.emoji} {prize.position}
                 </p>
                 <p className="text-lg text-gray-600 mt-2">
-                  <span className="font-bold">{prize.winners}</span> will win a{" "}
+                  <span className="font-bold">{prize.winners}</span> {t("willWinA")}{" "}
                   <span className="text-blue-600 font-semibold">
                     {prize.prize}
                   </span>
@@ -113,16 +115,16 @@ export default function Home() {
       </div>
 
       {/* Marquee Section */}
-      <div className="w-full bottom-0 fixed bg-black text-white  overflow-hidden">
+      <div className="w-full bottom-0 fixed bg-black text-white overflow-hidden">
         <div className="flex items-center">
           <span className="font-semibold text-lg px-4 w-[10%] h-full sm:block hidden bg-[#FF6500]">
-            What’s New
+            {t("whatsNew")}
           </span>
 
           <div className="overflow-hidden whitespace-nowrap w-full">
             <div className="flex space-x-8 animate-marquee">
               {[
-                "आशा के साथ “स्वच्छ वायु, स्वच्छ इंदौर” का संकल्प पूरा होने का विश्वास",
+                'आशा के साथ "स्वच्छ वायु, स्वच्छ इंदौर" का संकल्प पूरा होने का विश्वास',
                 "रिहायशी वातावरण को बेहतर बनाने हेतु सर्वोत्‍तम पद्धियों के लिए इन्‍दौर को मिला हुडको पुरस्‍कार 2024",
                 "स्वच्छ सर्वेक्षण-2024 में पूरे देश में फिर से स्वच्छता में नंबर - 1 आकर इंदौर बनेगा स्‍वच्‍छता में सिरमौर",
                 "इन्‍दौर में पहली बार होगा व्‍हाइट टॉपिंग सड़क का निर्माण",
