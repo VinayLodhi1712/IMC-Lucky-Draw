@@ -36,10 +36,7 @@ const TumblerColumn = ({ letter, delay = 0, isActive = false }) => {
       className="relative"
     >
       {/* Tumbler Container */}
-      <div className="w-24 h-32 bg-gradient-to-b from-amber-100 via-yellow-200 to-amber-300 border-4 border-amber-400 rounded-2xl shadow-2xl relative overflow-hidden">
-        {/* Inner Shadow Effect */}
-        <div className="absolute inset-2 bg-gradient-to-b from-transparent via-amber-50 to-transparent rounded-xl border border-amber-300"></div>
-        
+      <div className="w-24 h-32 bg-white border-2 border-gray-300 rounded-lg shadow-lg relative">
         {/* Letter Display */}
         <div className="absolute inset-0 flex items-center justify-center">
           <motion.span
@@ -47,27 +44,24 @@ const TumblerColumn = ({ letter, delay = 0, isActive = false }) => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="text-5xl font-black text-amber-900 drop-shadow-lg"
+            className="text-4xl font-bold text-gray-800"
           >
             {letter}
           </motion.span>
         </div>
         
-        {/* Highlight Effect */}
-        <div className="absolute top-2 left-2 right-2 h-6 bg-gradient-to-r from-transparent via-white to-transparent opacity-40 rounded-full blur-sm"></div>
-        
         {/* Active Glow */}
         {isActive && (
           <motion.div
-            className="absolute -inset-1 bg-yellow-400 rounded-2xl blur-md opacity-60"
-            animate={{ opacity: [0.6, 0.8, 0.6] }}
+            className="absolute -inset-1 bg-blue-400 rounded-lg blur-sm opacity-50"
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 1, repeat: Infinity }}
           />
         )}
       </div>
       
       {/* Base */}
-      <div className="w-28 h-4 bg-gradient-to-b from-amber-400 to-amber-600 rounded-full mx-auto mt-2 shadow-lg"></div>
+      <div className="w-28 h-3 bg-gray-400 rounded-full mx-auto mt-2"></div>
     </motion.div>
   )
 }
@@ -87,27 +81,21 @@ const LotterySequence = ({ onComplete }) => {
         setCurrentStep(currentStep + 1)
       }, 1500)
       return () => clearTimeout(timer)
-    } else {
-      setTimeout(onComplete, 2000)
+    } else if (currentStep === sequence.length - 1 && sequence[currentStep].left === "G" && sequence[currentStep].right === "O") {
+      // Only complete after GO appears
+      setTimeout(onComplete, 1000)
     }
   }, [currentStep, onComplete])
   
   return (
     <div className="flex flex-col items-center">
       <div className="mb-6">
-        <p className="text-amber-700 font-bold text-xl text-center mb-2">
-          🎰 Lottery Selection in Progress
+        <p className="text-gray-700 font-bold text-xl text-center">
+          🎰 Official Draw in Progress
         </p>
-        <div className="w-32 h-1 bg-amber-200 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-amber-500"
-            initial={{ width: "0%" }}
-            animate={{ width: `${((currentStep + 1) / sequence.length) * 100}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
       </div>
       
+      {/* Tumblers showing the sequence */}
       <div className="flex gap-8 mb-6">
         <TumblerColumn 
           letter={sequence[currentStep].left} 
@@ -121,28 +109,14 @@ const LotterySequence = ({ onComplete }) => {
         />
       </div>
       
-      {currentStep === sequence.length - 1 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <div className="flex items-center justify-center gap-2 text-green-600 font-semibold text-lg">
-            <CheckCircle className="w-6 h-6" />
-            Selection Complete!
-          </div>
-          <p className="text-amber-600 text-sm mt-2">Final Result: G - O</p>
-        </motion.div>
-      )}
-      
-      {currentStep < sequence.length - 1 && (
-        <div className="text-center">
-          <div className="flex items-center justify-center gap-2 text-amber-600">
-            <Clock className="w-5 h-5 animate-pulse" />
-            <span className="text-sm">Drawing in progress...</span>
-          </div>
+      <div className="text-center">
+        <div className="flex items-center justify-center gap-2 text-gray-600">
+          <Clock className="w-5 h-5 animate-pulse" />
+          <span className="text-sm">
+            {currentStep === sequence.length - 1 ? "Finalizing selection..." : "Drawing in progress..."}
+          </span>
         </div>
-      )}
+      </div>
     </div>
   )
 }
@@ -151,19 +125,19 @@ const LoadingCircles = () => {
   return (
     <div className="relative w-16 h-16 flex items-center justify-center mt-6">
       <motion.div
-        className="absolute w-12 h-12 border-3 border-amber-200 border-t-amber-600 rounded-full"
+        className="absolute w-12 h-12 border-4 border-gray-200 border-t-blue-600 rounded-full"
         animate={{ rotate: 360 }}
         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
       />
              
       <motion.div
-        className="absolute w-8 h-8 border-3 border-yellow-200 border-r-yellow-600 rounded-full"
+        className="absolute w-8 h-8 border-4 border-gray-200 border-r-green-600 rounded-full"
         animate={{ rotate: -360 }}
         transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
       />
              
       <motion.div
-        className="absolute w-4 h-4 border-2 border-orange-200 border-b-orange-600 rounded-full"
+        className="absolute w-4 h-4 border-2 border-gray-200 border-b-red-600 rounded-full"
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
       />
@@ -172,17 +146,11 @@ const LoadingCircles = () => {
 }
 
 export const DigitalTumbler = ({ text }) => {
-  const [showTumblers, setShowTumblers] = useState(false)
   const [sequenceComplete, setSequenceComplete] = useState(false)
   
   return (
     <div className="flex flex-col items-center justify-center py-6">
-      {!showTumblers ? (
-        <div className="flex flex-col items-center">
-          <CountdownTimer onComplete={() => setShowTumblers(true)} />
-          <p className="text-amber-700 text-lg font-medium">Initializing Draw Sequence...</p>
-        </div>
-      ) : !sequenceComplete ? (
+      {!sequenceComplete ? (
         <div className="w-full">
           <LotterySequence onComplete={() => setSequenceComplete(true)} />
         </div>
@@ -190,7 +158,7 @@ export const DigitalTumbler = ({ text }) => {
         <div className="flex flex-col items-center">
           <div className="mb-4">
             <p className="text-green-700 font-bold text-xl text-center mb-4">
-              🏆 Selection Confirmed!
+              🏆 Winner Selected!
             </p>
           </div>
           <div className="flex gap-8 mb-4">

@@ -55,6 +55,8 @@ export default function WinnersPage() {
   const [selectedPosition, setSelectedPosition] = useState(null)
   const [selectedWinners, setSelectedWinners] = useState([])
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const handleResize = () => {
@@ -69,7 +71,7 @@ export default function WinnersPage() {
   useEffect(() => {
     const fetchPropertyWinners = async () => {
       try {
-        const response = await fetch("http://localhost:5000/getAllPropertyWinners")
+        const response = await fetch(`${baseUrl}/getAllPropertyWinners`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
         const data = await response.json()
         setPropertyWinners(data)
@@ -80,7 +82,7 @@ export default function WinnersPage() {
 
     const fetchWaterWinners = async () => {
       try {
-        const response = await fetch("http://localhost:5000/getAllWaterWinners")
+        const response = await fetch(`${baseUrl}/getAllWaterWinners`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
         const data = await response.json()
         setWaterWinners(data)

@@ -14,32 +14,43 @@ export function WinnerRevealView({ prize, onBack, onReveal, winners, loading, er
   const [hasExistingWinners, setHasExistingWinners] = useState(false)
   const [checkingZone, setCheckingZone] = useState(false)
   const [winnerCheckMessage, setWinnerCheckMessage] = useState("")
+  const [baseUrl, setBaseUrl] = useState("http://localhost:5000")
 
   // Check for existing winners - REAL API INTEGRATION
   useEffect(() => {
     const checkExistingWinners = async () => {
-      // Determine if this is water or property based on current page URL
       const isWaterTax = typeof window !== "undefined" && window.location.pathname.includes("water")
 
       if (prize.id === "zone") {
         // For zonal prizes, don't check until a zone is selected
-        if (selectedZone) {
+        if (selectedZone && selectedZone >= 1 && selectedZone <= 19) {
           setCheckingZone(true)
           try {
             // Real API call to check if this specific zone has winners
             const endpoint = isWaterTax
-              ? `http://localhost:5000/checkWaterZoneWinners/${selectedZone}`
-              : `http://localhost:5000/checkPropertyZoneWinners/${selectedZone}`
+              ? `${baseUrl}/checkWaterZoneWinners/${selectedZone}`
+              : `${baseUrl}/checkPropertyZoneWinners/${selectedZone}`
 
+            console.log("Checking endpoint:", endpoint)
             const response = await fetch(endpoint)
-            const data = await response.json()
 
+            // Check if response is ok and content-type is JSON
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+            }
+
+            const contentType = response.headers.get("content-type")
+            if (!contentType || !contentType.includes("application/json")) {
+              throw new Error("Server returned non-JSON response. Check if API endpoint exists.")
+            }
+
+            const data = await response.json()
             setHasExistingWinners(data.hasWinners || false)
             setWinnerCheckMessage(data.message || "")
           } catch (error) {
             console.error("Error checking zone winners:", error)
             setHasExistingWinners(false)
-            setWinnerCheckMessage("Error checking zone status")
+            setWinnerCheckMessage(`Error: ${error.message}`)
           }
           setCheckingZone(false)
         } else {
@@ -51,25 +62,36 @@ export function WinnerRevealView({ prize, onBack, onReveal, winners, loading, er
         setCheckingZone(true)
         try {
           const endpoint = isWaterTax
-            ? `http://localhost:5000/checkWaterWinners/${prize.apiSlug}`
-            : `http://localhost:5000/checkPropertyWinners/${prize.apiSlug}`
+            ? `${baseUrl}/checkWaterWinners/${prize.apiSlug}`
+            : `${baseUrl}/checkPropertyWinners/${prize.apiSlug}`
 
+          console.log("Checking endpoint:", endpoint)
           const response = await fetch(endpoint)
-          const data = await response.json()
 
+          // Check if response is ok and content-type is JSON
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+          }
+
+          const contentType = response.headers.get("content-type")
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new Error("Server returned non-JSON response. Check if API endpoint exists.")
+          }
+
+          const data = await response.json()
           setHasExistingWinners(data.hasWinners || false)
           setWinnerCheckMessage(data.message || "")
         } catch (error) {
           console.error("Error checking position winners:", error)
           setHasExistingWinners(false)
-          setWinnerCheckMessage("Error checking position status")
+          setWinnerCheckMessage(`Error: ${error.message}`)
         }
         setCheckingZone(false)
       }
     }
 
     checkExistingWinners()
-  }, [prize, selectedZone])
+  }, [prize, selectedZone, baseUrl])
 
   const handleRevealClick = () => {
     if (prize.id === "zone" && !selectedZone) {
@@ -133,7 +155,13 @@ export function WinnerRevealView({ prize, onBack, onReveal, winners, loading, er
         <input
           type="number"
           value={selectedZone}
-          onChange={(e) => setSelectedZone(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            // Only allow numbers between 1-19 or empty string
+            if (value === "" || (Number(value) >= 1 && Number(value) <= 19)) {
+              setSelectedZone(value)
+            }
+          }}
           placeholder="Or type zone number (1-19)"
           min="1"
           max="19"
@@ -160,12 +188,19 @@ export function WinnerRevealView({ prize, onBack, onReveal, winners, loading, er
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 text-center">
           <div
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${
-              hasExistingWinners
-                ? "bg-amber-100 text-amber-800 border-2 border-amber-300"
-                : "bg-green-100 text-green-800 border-2 border-green-300"
+              winnerCheckMessage.includes("Error")
+                ? "bg-red-100 text-red-800 border-2 border-red-300"
+                : hasExistingWinners
+                  ? "bg-amber-100 text-amber-800 border-2 border-amber-300"
+                  : "bg-green-100 text-green-800 border-2 border-green-300"
             }`}
           >
-            {hasExistingWinners ? (
+            {winnerCheckMessage.includes("Error") ? (
+              <>
+                <AlertCircle className="w-4 h-4" />
+                API Connection Error
+              </>
+            ) : hasExistingWinners ? (
               <>
                 <AlertCircle className="w-4 h-4" />
                 Zone {selectedZone} - Winners Already Selected
@@ -177,7 +212,7 @@ export function WinnerRevealView({ prize, onBack, onReveal, winners, loading, er
               </>
             )}
           </div>
-          {winnerCheckMessage && <p className="text-sm text-gray-600 mt-2">{winnerCheckMessage}</p>}
+          {winnerCheckMessage && <p className="text-sm text-gray-600 mt-2 max-w-md mx-auto">{winnerCheckMessage}</p>}
         </motion.div>
       )}
     </motion.div>

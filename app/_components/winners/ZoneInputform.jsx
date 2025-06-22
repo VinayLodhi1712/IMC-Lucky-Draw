@@ -1,5 +1,5 @@
 "use client"
-import { useState, useCallback } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, MapPin, Shield, CheckCircle, Award } from "lucide-react"
@@ -41,29 +41,10 @@ export const ZoneInputForm = ({ onConfirm }) => {
     }
   }
 
-  // Solution 1: Batch state updates using useCallback and flushSync
-  const handleZoneClick = useCallback((zoneNum) => {
-    // Batch all state updates together
-    const zoneString = zoneNum.toString()
-    setZone(zoneString)
-    
-    // Set validation state based on the new zone
-    const isValidZone = zoneNum >= 1 && zoneNum <= 19
-    setIsValid(isValidZone)
+  const handleZoneClick = (zoneNum) => {
+    setZone(zoneNum.toString())
+    setIsValid(true)
     setError("")
-  }, [])
-
-  // Get input styling without causing re-renders
-  const getInputClassName = () => {
-    const baseClasses = "w-full text-center text-3xl font-bold p-6 border-3 rounded-xl focus:ring-4 focus:ring-blue-200/50 focus:outline-none shadow-inner"
-    
-    if (error) {
-      return `${baseClasses} border-red-400 bg-red-50 text-red-700 transition-colors duration-200`
-    } else if (isValid) {
-      return `${baseClasses} border-green-400 bg-green-50 text-green-700 transition-colors duration-200`
-    } else {
-      return `${baseClasses} border-slate-300 bg-slate-50 text-slate-700 focus:border-blue-500 focus:bg-blue-50 transition-colors duration-200`
-    }
   }
 
   return (
@@ -128,16 +109,8 @@ export const ZoneInputForm = ({ onConfirm }) => {
               <label htmlFor="zone-input" className="text-lg font-bold text-slate-700">
                 Enter Zone Number (1-19)
               </label>
-              {/* Solution 2: Use AnimatePresence to control mount/unmount animations better */}
               {isValid && (
-                <motion.div 
-                  initial={{ scale: 0, opacity: 0 }} 
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0, opacity: 0 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="ml-auto"
-                  key="checkmark" // Add key to prevent re-mounting
-                >
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto">
                   <CheckCircle className="w-6 h-6 text-green-500" />
                 </motion.div>
               )}
@@ -152,7 +125,13 @@ export const ZoneInputForm = ({ onConfirm }) => {
               placeholder="e.g., 5"
               min="1"
               max="19"
-              className={getInputClassName()}
+              className={`w-full text-center text-3xl font-bold p-6 border-3 rounded-xl transition-all duration-300 ${
+                error
+                  ? "border-red-400 bg-red-50 text-red-700"
+                  : isValid
+                    ? "border-green-400 bg-green-50 text-green-700"
+                    : "border-slate-300 bg-slate-50 text-slate-700 focus:border-blue-500 focus:bg-blue-50"
+              } focus:ring-4 focus:ring-blue-200/50 focus:outline-none shadow-inner`}
             />
           </div>
         </div>
@@ -162,10 +141,7 @@ export const ZoneInputForm = ({ onConfirm }) => {
           <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
             className="text-red-600 text-base mt-4 font-semibold flex items-center gap-3 bg-red-50 p-4 rounded-xl border-2 border-red-200"
-            key="error-message"
           >
             <span className="w-3 h-3 bg-red-500 rounded-full"></span>
             {error}
@@ -191,9 +167,7 @@ export const ZoneInputForm = ({ onConfirm }) => {
               onClick={() => handleZoneClick(zoneNum)}
               whileHover={{ scale: 1.1, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              // Solution 3: Use layout prop to prevent layout shift animations
-              layout={false}
-              className={`p-4 rounded-xl font-bold transition-all duration-200 shadow-md ${
+              className={`p-4 rounded-xl font-bold transition-all duration-300 shadow-md ${
                 zone === zoneNum.toString()
                   ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-xl transform scale-105"
                   : "bg-white text-slate-600 hover:bg-slate-100 border-2 border-slate-200 hover:border-blue-300"

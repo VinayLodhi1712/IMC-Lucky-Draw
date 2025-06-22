@@ -23,8 +23,7 @@ export function WinnerPositionView({ position, winners, onBack }) {
         [`Lucky Draw - ${position.type === "property" ? "Property Tax" : "Water Tax"} Category`],
         [`Total Winners: ${winners.length}`],
         [`Generated on: ${new Date().toLocaleDateString()}`],
-        [], // Empty row
-        // Column headers based on your data structure
+        [], 
         ['S.No.', 'Property Owner Name', 'Partner/Phone', 'Ward', 'Zone', 'Tax Amount', 'Assessment Year', 'Serial No.']
       ]
       

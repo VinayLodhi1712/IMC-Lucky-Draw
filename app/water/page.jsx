@@ -59,6 +59,7 @@ function WaterWinnersPage() {
   const [showConfetti, setShowConfetti] = useState(false)
   const { width, height } = useWindowSize()
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   useEffect(() => {
     if (showConfetti) {
       const timer = setTimeout(() => setShowConfetti(false), 10000)
@@ -88,9 +89,9 @@ function WaterWinnersPage() {
     setWinners([])
 
     const url =
-      prize.apiSlug === "zone"
-        ? `http://localhost:5000/water_random-zone-winners/${prize.zone}`
-        : `http://localhost:5000/water_random-winner_${prize.apiSlug}`
+  prize.apiSlug === "zone"
+    ? `${baseUrl}/water_random-zone-winners/${prize.zone}`
+    : `${baseUrl}/water_random-winner_${prize.apiSlug}`;
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 3000))
@@ -117,7 +118,7 @@ function WaterWinnersPage() {
   const downloadExcel = async () => {
     setLoadingExcel(true)
     try {
-      const response = await fetch("http://localhost:5000/GenerateExcelWater")
+      const response = await fetch(`${baseUrl}/GenerateExcelWater`);
       if (!response.ok) throw new Error("Failed to generate report")
 
       const blob = await response.blob()
