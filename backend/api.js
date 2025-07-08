@@ -9,7 +9,7 @@ const ExcelJS = require("exceljs"); //excel
 const JWT = require("jsonwebtoken");
 const checkToken = require("./middlewares/isLoggedin.js");
 
-app.use(cors());
+app.use(cors(*));
 app.use(express.json());
 // schemas to get winners
 
