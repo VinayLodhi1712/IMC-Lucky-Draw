@@ -13,11 +13,14 @@ const checkToken = require("./middlewares/isLoggedin.js");
 const allowedOrigins = [
   'http://localhost:3000',           // Local development
   'http://localhost:3001',           // Alternative local port
-  'https://imc-lucky-draw.vercel.app',  // Deployed frontend
+  'https://imc-lucky-draw.vercel.app',  // Main Vercel deployment
   'https://imc-lucky-draw-git-main-vinaylodhi1712s-projects.vercel.app', // Vercel git URL
-  'https://imc-lucky-draw-vinaylodhi1712s-projects.vercel.app' // Alternative Vercel URL
+  'https://imc-lucky-draw-vinaylodhi1712s-projects.vercel.app', // Alternative Vercel URL
+  'https://imc-lucky-draw-main.vercel.app', // Possible main branch URL
+  'https://imc-lucky-draw-preview.vercel.app' // Preview deployments
 ];
 
+// Apply CORS middleware
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, Postman, etc.)
@@ -32,6 +35,11 @@ app.use(cors({
       return callback(null, true);
     }
     
+    // Allow any Vercel preview URL for this project
+    if (origin && (origin.includes('imc-lucky-draw') && origin.includes('vercel.app'))) {
+      return callback(null, true);
+    }
+    
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -39,6 +47,29 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   optionsSuccessStatus: 200
 }));
+
+// Additional CORS headers middleware for better compatibility
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  if (allowedOrigins.includes(origin) || 
+      (origin && origin.startsWith('http://localhost')) ||
+      (origin && origin.includes('imc-lucky-draw') && origin.includes('vercel.app'))) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
+  next();
+});
 
 // Body parser middleware
 app.use(express.json());

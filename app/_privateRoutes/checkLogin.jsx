@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../_context/userAuth";
+import { apiRequest } from "@/lib/api";
 import PulseLoader from "react-spinners/PulseLoader";
 
 export default function CheckLogin(WrappedComponent) {
@@ -27,20 +28,16 @@ export default function CheckLogin(WrappedComponent) {
         setAuth(storedAuth);
 
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/userAuth`,
-            {
-              headers: {
-                Authorization: `Bearer ${storedAuth.token}`,
-              },
-            }
-          );
+          const data = await apiRequest('/userAuth', {
+            headers: {
+              Authorization: `Bearer ${storedAuth.token}`,
+            },
+          });
 
-          if (res.ok) {
-            const data = await res.json();
-            if (data.success) {
-              setIsAuthenticated(true);
-            }
+          if (data.success) {
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
           }
         } catch (error) {
           console.error("Error checking authentication:", error);
