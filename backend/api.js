@@ -9,8 +9,40 @@ const ExcelJS = require("exceljs"); //excel
 const JWT = require("jsonwebtoken");
 const checkToken = require("./middlewares/isLoggedin.js");
 
-app.use(cors());
+// CORS configuration for both local and deployed environments
+const allowedOrigins = [
+  'http://localhost:3000',           // Local development
+  'http://localhost:3001',           // Alternative local port
+  'https://imc-lucky-draw.vercel.app',  // Deployed frontend
+  'https://imc-lucky-draw-git-main-vinaylodhi1712s-projects.vercel.app', // Vercel git URL
+  'https://imc-lucky-draw-vinaylodhi1712s-projects.vercel.app' // Alternative Vercel URL
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // For development, allow any localhost origin
+    if (origin && origin.startsWith('http://localhost')) {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 200
+}));
+
+// Body parser middleware
 app.use(express.json());
+
 // schemas to get winners
 
 const PropertyAdvance = mongoose.model(

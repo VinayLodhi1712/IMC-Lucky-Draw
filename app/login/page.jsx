@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
+import { apiRequestWithFallback } from "@/lib/api";
 
 import {
   Card,
@@ -32,15 +33,12 @@ function Login() {
     }
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/Login`, {
+      const result = await apiRequestWithFallback('/Login', {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ Email: email, Password: password }),
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         toast.success("Login Successful");
         localStorage.setItem(
           "auth",
@@ -54,12 +52,11 @@ function Login() {
           router.push("/");
         }, 2000);
       } else {
-        toast.error(result.message);
-        setLoading(false);
+        toast.error(result.message || "Login failed");
       }
     } catch (error) {
+      console.error("Login error:", error);
       toast.error("An unexpected error occurred.");
-      setLoading(false);
     } finally {
       setLoading(false);
     }
